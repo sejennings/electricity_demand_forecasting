@@ -71,3 +71,59 @@ python -m unittest discover -s tests -v
 
 Offline tests cover UTC alignment, date windows, duplicate rejection, missing-hour
 reporting, credential-safe caching and pagination. Live demand imports require an EIA key.
+
+## Baseline forecasting
+
+Reinstall with `python -m pip install -e .` to register `gridcast-baseline`.
+Four demand-only baselines produce hourly forecasts for the next 24 hours:
+persistence, daily seasonal naive, weekly seasonal naive, and their daily/weekly mean.
+No training dependencies or weather inputs are required.
+
+```powershell
+gridcast-baseline evaluate --start 2025-01-08T00:00:00Z --end 2025-01-31T00:00:00Z
+gridcast-baseline forecast --issue 2025-02-01T00:00:00Z
+# Sensitivity to delayed observations, with separate results:
+gridcast-baseline evaluate --start 2025-01-09T00:00:00Z --end 2025-01-31T00:00:00Z --availability-delay-hours 24 --output data/models/baselines-delay24
+```
+
+Use `--input` for a demand CSV or directory, `--region` for the balancing authority,
+and `--output` for results. Directory inputs combine CSVs, deduplicate identical records,
+and reject conflicting overlaps. Defaults read `data/processed/demand/DUK`.
+
+Evaluation issues forecasts at midnight UTC each day, with 24 targets beginning at
+that midnight. Issue bounds are inclusive. Horizons 1–24 label the first through last
+target hour. Observations must be strictly before issue time minus the configured
+availability delay. Seasonal lags repeat backward until before that cutoff; missing
+source hours are never replaced with future observations. Persistence uses the hour
+immediately before the cutoff. These baselines use UTC seasons, not local-time seasons.
+
+All four models are evaluated on identical complete daily windows. Incomplete days
+are excluded and counted. `metrics.json` reports MAE, RMSE, WAPE, and MAE at each day's
+actual peak hour. WAPE is null when total actual demand is zero. Per-hour issued forecasts
+and actuals are saved in `backtest_predictions.csv`. Future forecasts use separate CSVs
+named by region and issue time. Evaluation outputs overwrite prior results in the same
+output directory; use separate directories for experiments.
+
+The default zero-hour delay is an optimistic assumption. Historical EIA values can be
+revised; this is a retrospective comparison, not a reconstruction of data publication.
+Use delay sensitivity runs and verify actual source availability before scheduling forecasts.
+At least seven days of prior history are needed, plus the evaluation interval (more with delay).
+
+Initial DUK comparison: January 8–31, 2025, 576 hours across 24 complete days:
+
+| Model | MAE (MW) | RMSE (MW) | WAPE |
+| --- | ---: | ---: | ---: |
+| Persistence | 1,476.82 | 1,849.44 | 9.71% |
+| Daily naive | 1,306.77 | 1,704.88 | 8.59% |
+| Weekly naive | 3,142.86 | 3,725.60 | 20.67% |
+| Daily/weekly mean | 1,872.95 | 2,251.81 | 12.32% |
+
+This single winter month verifies the workflow; it is not evidence of year-round performance.
+
+## When to set up AWS
+
+Continue locally until a multi-season backfill passes data-quality review and baseline
+evaluation runs reproducibly. Then set up the AWS account/project environment and budget
+alert before deploying the first storage and scheduled-ingestion milestone. Model evaluation
+does not require AWS. Infrastructure provisioning, account configuration, and deployment
+are not part of the baseline implementation.
