@@ -1,0 +1,29 @@
+{
+  "demand": {
+    "rows": 43823,
+    "expected_hours": 43824,
+    "missing_hours": 1,
+    "null_values": {
+      "demand_mw": 0
+    },
+    "missing_timestamps_utc": [
+      "2025-11-03T05:00:00Z"
+    ],
+    "source": "https://www.eia.gov/opendata/bulk/EBA.zip",
+    "series_id": "EBA.DUK-ALL.D.H",
+    "units": "megawatthours",
+    "downloaded_at_utc": "2026-10-17T19:08:43.386404+00:00",
+    "nonpositive_values": 0
+  },
+  "weather": {
+    "rows": 43824,
+    "expected_hours": 43824,
+    "missing_hours": 0,
+    "null_values": {
+      "temperature_2m": 0,
+      "relative_humidity_2m": 0,
+      "precipitation": 0,
+      "wind_speed_10m": 0
+    }
+  }
+}

@@ -1,0 +1,560 @@
+{
+  "region": "DUK",
+  "availability_delay_hours": 24,
+  "parameters": {
+    "max_iter": 200,
+    "max_leaf_nodes": 15,
+    "learning_rate": 0.05,
+    "l2_regularization": 10,
+    "early_stopping": false,
+    "random_state": 42
+  },
+  "sklearn_version": "1.9.1",
+  "input_sha256": "f33b1d7b8de34dde552b2a18a382ecbad92995d51cf6fbe15188b31b84ac4470",
+  "protocol": "Monthly expanding refits; 2024 validation, 2025 prequential holdout; no tuning on 2025. Revised observations, assumed 24h delay.",
+  "weather": "Excluded: historical reanalysis is unavailable as future forecast input.",
+  "folds": [
+    {
+      "month": "2024-01",
+      "training_rows": 25920,
+      "training_cutoff_exclusive": "2023-12-31T00:00:00Z",
+      "evaluated_days": 31,
+      "skipped_days": 0
+    },
+    {
+      "month": "2024-02",
+      "training_rows": 26664,
+      "training_cutoff_exclusive": "2024-01-31T00:00:00Z",
+      "evaluated_days": 29,
+      "skipped_days": 0
+    },
+    {
+      "month": "2024-03",
+      "training_rows": 27360,
+      "training_cutoff_exclusive": "2024-02-29T00:00:00Z",
+      "evaluated_days": 31,
+      "skipped_days": 0
+    },
+    {
+      "month": "2024-04",
+      "training_rows": 28104,
+      "training_cutoff_exclusive": "2024-03-31T00:00:00Z",
+      "evaluated_days": 30,
+      "skipped_days": 0
+    },
+    {
+      "month": "2024-05",
+      "training_rows": 28824,
+      "training_cutoff_exclusive": "2024-04-30T00:00:00Z",
+      "evaluated_days": 31,
+      "skipped_days": 0
+    },
+    {
+      "month": "2024-06",
+      "training_rows": 29568,
+      "training_cutoff_exclusive": "2024-05-31T00:00:00Z",
+      "evaluated_days": 30,
+      "skipped_days": 0
+    },
+    {
+      "month": "2024-07",
+      "training_rows": 30288,
+      "training_cutoff_exclusive": "2024-06-30T00:00:00Z",
+      "evaluated_days": 31,
+      "skipped_days": 0
+    },
+    {
+      "month": "2024-08",
+      "training_rows": 31032,
+      "training_cutoff_exclusive": "2024-07-31T00:00:00Z",
+      "evaluated_days": 31,
+      "skipped_days": 0
+    },
+    {
+      "month": "2024-09",
+      "training_rows": 31776,
+      "training_cutoff_exclusive": "2024-08-31T00:00:00Z",
+      "evaluated_days": 30,
+      "skipped_days": 0
+    },
+    {
+      "month": "2024-10",
+      "training_rows": 32496,
+      "training_cutoff_exclusive": "2024-09-30T00:00:00Z",
+      "evaluated_days": 31,
+      "skipped_days": 0
+    },
+    {
+      "month": "2024-11",
+      "training_rows": 33240,
+      "training_cutoff_exclusive": "2024-10-31T00:00:00Z",
+      "evaluated_days": 30,
+      "skipped_days": 0
+    },
+    {
+      "month": "2024-12",
+      "training_rows": 33960,
+      "training_cutoff_exclusive": "2024-11-30T00:00:00Z",
+      "evaluated_days": 31,
+      "skipped_days": 0
+    },
+    {
+      "month": "2025-01",
+      "training_rows": 34704,
+      "training_cutoff_exclusive": "2024-12-31T00:00:00Z",
+      "evaluated_days": 31,
+      "skipped_days": 0
+    },
+    {
+      "month": "2025-02",
+      "training_rows": 35448,
+      "training_cutoff_exclusive": "2025-01-31T00:00:00Z",
+      "evaluated_days": 28,
+      "skipped_days": 0
+    },
+    {
+      "month": "2025-03",
+      "training_rows": 36120,
+      "training_cutoff_exclusive": "2025-02-28T00:00:00Z",
+      "evaluated_days": 31,
+      "skipped_days": 0
+    },
+    {
+      "month": "2025-04",
+      "training_rows": 36864,
+      "training_cutoff_exclusive": "2025-03-31T00:00:00Z",
+      "evaluated_days": 30,
+      "skipped_days": 0
+    },
+    {
+      "month": "2025-05",
+      "training_rows": 37584,
+      "training_cutoff_exclusive": "2025-04-30T00:00:00Z",
+      "evaluated_days": 31,
+      "skipped_days": 0
+    },
+    {
+      "month": "2025-06",
+      "training_rows": 38328,
+      "training_cutoff_exclusive": "2025-05-31T00:00:00Z",
+      "evaluated_days": 30,
+      "skipped_days": 0
+    },
+    {
+      "month": "2025-07",
+      "training_rows": 39048,
+      "training_cutoff_exclusive": "2025-06-30T00:00:00Z",
+      "evaluated_days": 31,
+      "skipped_days": 0
+    },
+    {
+      "month": "2025-08",
+      "training_rows": 39792,
+      "training_cutoff_exclusive": "2025-07-31T00:00:00Z",
+      "evaluated_days": 31,
+      "skipped_days": 0
+    },
+    {
+      "month": "2025-09",
+      "training_rows": 40536,
+      "training_cutoff_exclusive": "2025-08-31T00:00:00Z",
+      "evaluated_days": 30,
+      "skipped_days": 0
+    },
+    {
+      "month": "2025-10",
+      "training_rows": 41256,
+      "training_cutoff_exclusive": "2025-09-30T00:00:00Z",
+      "evaluated_days": 31,
+      "skipped_days": 0
+    },
+    {
+      "month": "2025-11",
+      "training_rows": 42000,
+      "training_cutoff_exclusive": "2025-10-31T00:00:00Z",
+      "evaluated_days": 26,
+      "skipped_days": 4
+    },
+    {
+      "month": "2025-12",
+      "training_rows": 42693,
+      "training_cutoff_exclusive": "2025-11-30T00:00:00Z",
+      "evaluated_days": 31,
+      "skipped_days": 0
+    }
+  ],
+  "by_year": {
+    "2024": {
+      "daily_naive": {
+        "hours": 8784,
+        "mae_mw": 1240.5135473588343,
+        "rmse_mw": 1656.1813149314453,
+        "wape_percent": 10.076722730736892,
+        "peak_hour_mae_mw": 1588.0601092896175
+      },
+      "daily_weekly_mean": {
+        "hours": 8784,
+        "mae_mw": 1112.4301571038252,
+        "rmse_mw": 1531.4115481211466,
+        "wape_percent": 9.036298131779123,
+        "peak_hour_mae_mw": 1463.4125683060108
+      },
+      "gradient_boosting": {
+        "hours": 8784,
+        "mae_mw": 958.8996293510528,
+        "rmse_mw": 1295.7910855146865,
+        "wape_percent": 7.789165795205874,
+        "peak_hour_mae_mw": 1332.5439913120713
+      },
+      "persistence": {
+        "hours": 8784,
+        "mae_mw": 2318.8867258652094,
+        "rmse_mw": 3088.034263396055,
+        "wape_percent": 18.836375169203105,
+        "peak_hour_mae_mw": 1610.5737704918033
+      },
+      "weekly_naive": {
+        "hours": 8784,
+        "mae_mw": 1425.3738615664845,
+        "rmse_mw": 1993.6543987848474,
+        "wape_percent": 11.57834771028946,
+        "peak_hour_mae_mw": 1932.327868852459
+      }
+    },
+    "2025": {
+      "daily_naive": {
+        "hours": 8664,
+        "mae_mw": 1305.2220683287164,
+        "rmse_mw": 1761.1393019983961,
+        "wape_percent": 10.39945087758245,
+        "peak_hour_mae_mw": 1619.5401662049862
+      },
+      "daily_weekly_mean": {
+        "hours": 8664,
+        "mae_mw": 1258.5603647276084,
+        "rmse_mw": 1691.9937650845375,
+        "wape_percent": 10.027670391917365,
+        "peak_hour_mae_mw": 1606.1883656509694
+      },
+      "gradient_boosting": {
+        "hours": 8664,
+        "mae_mw": 1038.6529925131817,
+        "rmse_mw": 1406.912428367655,
+        "wape_percent": 8.275542558306283,
+        "peak_hour_mae_mw": 1517.6037346931282
+      },
+      "persistence": {
+        "hours": 8664,
+        "mae_mw": 2337.4750692520774,
+        "rmse_mw": 3098.7590991807206,
+        "wape_percent": 18.624001041743494,
+        "peak_hour_mae_mw": 1631.0
+      },
+      "weekly_naive": {
+        "hours": 8664,
+        "mae_mw": 1622.873730378578,
+        "rmse_mw": 2231.3571349440554,
+        "wape_percent": 12.930363383451912,
+        "peak_hour_mae_mw": 2106.814404432133
+      }
+    }
+  },
+  "by_season": {
+    "2024_winter": {
+      "daily_naive": {
+        "hours": 2184,
+        "mae_mw": 1628.6799450549452,
+        "rmse_mw": 2141.784798946897,
+        "wape_percent": 12.648670111250954,
+        "peak_hour_mae_mw": 2166.5054945054944
+      },
+      "daily_weekly_mean": {
+        "hours": 2184,
+        "mae_mw": 1579.621565934066,
+        "rmse_mw": 2086.490369643356,
+        "wape_percent": 12.267672447727968,
+        "peak_hour_mae_mw": 1936.8626373626373
+      },
+      "gradient_boosting": {
+        "hours": 2184,
+        "mae_mw": 1361.3463332234548,
+        "rmse_mw": 1750.2000521076448,
+        "wape_percent": 10.57250120159347,
+        "peak_hour_mae_mw": 1805.3361118036144
+      },
+      "persistence": {
+        "hours": 2184,
+        "mae_mw": 1422.381868131868,
+        "rmse_mw": 1837.9640452146584,
+        "wape_percent": 11.04651596948221,
+        "peak_hour_mae_mw": 2474.6153846153848
+      },
+      "weekly_naive": {
+        "hours": 2184,
+        "mae_mw": 2085.92673992674,
+        "rmse_mw": 2790.6080066364207,
+        "wape_percent": 16.199744639626175,
+        "peak_hour_mae_mw": 2547.197802197802
+      }
+    },
+    "2024_spring": {
+      "daily_naive": {
+        "hours": 2208,
+        "mae_mw": 1103.1965579710145,
+        "rmse_mw": 1452.0068411849256,
+        "wape_percent": 9.966000292696727,
+        "peak_hour_mae_mw": 1587.391304347826
+      },
+      "daily_weekly_mean": {
+        "hours": 2208,
+        "mae_mw": 908.710597826087,
+        "rmse_mw": 1214.3537833706428,
+        "wape_percent": 8.209063034576058,
+        "peak_hour_mae_mw": 1430.4891304347825
+      },
+      "gradient_boosting": {
+        "hours": 2208,
+        "mae_mw": 717.5458610123671,
+        "rmse_mw": 1001.7295859650466,
+        "wape_percent": 6.482128872868059,
+        "peak_hour_mae_mw": 1216.7318427476057
+      },
+      "persistence": {
+        "hours": 2208,
+        "mae_mw": 1975.0828804347825,
+        "rmse_mw": 2597.882606758122,
+        "wape_percent": 17.842402083555545,
+        "peak_hour_mae_mw": 1476.6195652173913
+      },
+      "weekly_naive": {
+        "hours": 2208,
+        "mae_mw": 1074.1295289855072,
+        "rmse_mw": 1449.9244548661288,
+        "wape_percent": 9.703416062094911,
+        "peak_hour_mae_mw": 1780.2608695652175
+      }
+    },
+    "2024_summer": {
+      "daily_naive": {
+        "hours": 2208,
+        "mae_mw": 1266.174365942029,
+        "rmse_mw": 1608.4635730007349,
+        "wape_percent": 8.895554451663862,
+        "peak_hour_mae_mw": 1433.9782608695652
+      },
+      "daily_weekly_mean": {
+        "hours": 2208,
+        "mae_mw": 1113.0271739130435,
+        "rmse_mw": 1450.8204805566181,
+        "wape_percent": 7.819613236569293,
+        "peak_hour_mae_mw": 1322.570652173913
+      },
+      "gradient_boosting": {
+        "hours": 2208,
+        "mae_mw": 999.2085510340131,
+        "rmse_mw": 1263.5386464552978,
+        "wape_percent": 7.019976326624012,
+        "peak_hour_mae_mw": 1283.9196594802088
+      },
+      "persistence": {
+        "hours": 2208,
+        "mae_mw": 3823.123188405797,
+        "rmse_mw": 4584.680493387656,
+        "wape_percent": 26.859492193699648,
+        "peak_hour_mae_mw": 1400.3478260869565
+      },
+      "weekly_naive": {
+        "hours": 2208,
+        "mae_mw": 1382.5910326086957,
+        "rmse_mw": 1809.8090913162278,
+        "wape_percent": 9.713444013536376,
+        "peak_hour_mae_mw": 1759.358695652174
+      }
+    },
+    "2024_fall": {
+      "daily_naive": {
+        "hours": 2184,
+        "mae_mw": 965.2303113553113,
+        "rmse_mw": 1302.9623111742947,
+        "wape_percent": 8.730723300585264,
+        "peak_hour_mae_mw": 1166.065934065934
+      },
+      "daily_weekly_mean": {
+        "hours": 2184,
+        "mae_mw": 850.5934065934066,
+        "rmse_mw": 1208.3525366353315,
+        "wape_percent": 7.693806946283884,
+        "peak_hour_mae_mw": 1165.6373626373627
+      },
+      "gradient_boosting": {
+        "hours": 2184,
+        "mae_mw": 759.7070561635597,
+        "rmse_mw": 1030.2607669525153,
+        "wape_percent": 6.8717196495341195,
+        "peak_hour_mae_mw": 1025.9953455069262
+      },
+      "persistence": {
+        "hours": 2184,
+        "mae_mw": 2042.2069597069597,
+        "rmse_mw": 2627.1385112563075,
+        "wape_percent": 18.472217125771092,
+        "peak_hour_mae_mw": 1094.4945054945056
+      },
+      "weekly_naive": {
+        "hours": 2184,
+        "mae_mw": 1163.1781135531135,
+        "rmse_mw": 1661.8387868226805,
+        "wape_percent": 10.521205290859,
+        "peak_hour_mae_mw": 1646.065934065934
+      }
+    },
+    "2025_winter": {
+      "daily_naive": {
+        "hours": 2160,
+        "mae_mw": 1817.2694444444444,
+        "rmse_mw": 2366.8854069493163,
+        "wape_percent": 13.33563673870414,
+        "peak_hour_mae_mw": 2180.588888888889
+      },
+      "daily_weekly_mean": {
+        "hours": 2160,
+        "mae_mw": 1955.6321759259258,
+        "rmse_mw": 2376.5803850290085,
+        "wape_percent": 14.350981563244446,
+        "peak_hour_mae_mw": 2301.811111111111
+      },
+      "gradient_boosting": {
+        "hours": 2160,
+        "mae_mw": 1549.357392589318,
+        "rmse_mw": 1955.6590003354086,
+        "wape_percent": 11.369622390978689,
+        "peak_hour_mae_mw": 2242.3007635478857
+      },
+      "persistence": {
+        "hours": 2160,
+        "mae_mw": 1561.425,
+        "rmse_mw": 2052.085743371399,
+        "wape_percent": 11.4581779044311,
+        "peak_hour_mae_mw": 2452.777777777778
+      },
+      "weekly_naive": {
+        "hours": 2160,
+        "mae_mw": 2618.2921296296295,
+        "rmse_mw": 3171.697721354945,
+        "wape_percent": 19.21376756941132,
+        "peak_hour_mae_mw": 2961.4777777777776
+      }
+    },
+    "2025_spring": {
+      "daily_naive": {
+        "hours": 2208,
+        "mae_mw": 1116.345561594203,
+        "rmse_mw": 1458.2122093074067,
+        "wape_percent": 10.173825745160439,
+        "peak_hour_mae_mw": 1530.5108695652175
+      },
+      "daily_weekly_mean": {
+        "hours": 2208,
+        "mae_mw": 951.9171195652174,
+        "rmse_mw": 1241.604706258502,
+        "wape_percent": 8.67530559664821,
+        "peak_hour_mae_mw": 1359.304347826087
+      },
+      "gradient_boosting": {
+        "hours": 2208,
+        "mae_mw": 771.4781807972489,
+        "rmse_mw": 1028.0148791340587,
+        "wape_percent": 7.0308736359518935,
+        "peak_hour_mae_mw": 1176.6187664197162
+      },
+      "persistence": {
+        "hours": 2208,
+        "mae_mw": 1954.6308876811595,
+        "rmse_mw": 2550.6366439385624,
+        "wape_percent": 17.813546926256397,
+        "peak_hour_mae_mw": 1468.6630434782608
+      },
+      "weekly_naive": {
+        "hours": 2208,
+        "mae_mw": 1137.690670289855,
+        "rmse_mw": 1578.2360350520946,
+        "wape_percent": 10.36835459344193,
+        "peak_hour_mae_mw": 1698.6195652173913
+      }
+    },
+    "2025_summer": {
+      "daily_naive": {
+        "hours": 2208,
+        "mae_mw": 1209.4660326086957,
+        "rmse_mw": 1600.2019371264782,
+        "wape_percent": 8.4882581576326,
+        "peak_hour_mae_mw": 1461.608695652174
+      },
+      "daily_weekly_mean": {
+        "hours": 2208,
+        "mae_mw": 1256.096920289855,
+        "rmse_mw": 1679.6930146353693,
+        "wape_percent": 8.81552242308991,
+        "peak_hour_mae_mw": 1614.3369565217392
+      },
+      "gradient_boosting": {
+        "hours": 2208,
+        "mae_mw": 1030.256474544455,
+        "rmse_mw": 1355.0897082028603,
+        "wape_percent": 7.230532060204713,
+        "peak_hour_mae_mw": 1526.8298747422384
+      },
+      "persistence": {
+        "hours": 2208,
+        "mae_mw": 3660.3301630434785,
+        "rmse_mw": 4475.689524998889,
+        "wape_percent": 25.688879661273333,
+        "peak_hour_mae_mw": 1440.7173913043478
+      },
+      "weekly_naive": {
+        "hours": 2208,
+        "mae_mw": 1696.2060688405797,
+        "rmse_mw": 2298.475745218708,
+        "wape_percent": 11.904290499012447,
+        "peak_hour_mae_mw": 2325.021739130435
+      }
+    },
+    "2025_fall": {
+      "daily_naive": {
+        "hours": 2088,
+        "mae_mw": 1076.5086206896551,
+        "rmse_mw": 1455.397953833586,
+        "wape_percent": 9.517423140377451,
+        "peak_hour_mae_mw": 1300.2988505747126
+      },
+      "daily_weekly_mean": {
+        "hours": 2088,
+        "mae_mw": 864.3230363984675,
+        "rmse_mw": 1192.7111869413236,
+        "wape_percent": 7.641488334863573,
+        "peak_hour_mae_mw": 1139.0344827586207
+      },
+      "gradient_boosting": {
+        "hours": 2088,
+        "mae_mw": 801.7468583078537,
+        "rmse_mw": 1094.3246027301475,
+        "wape_percent": 7.088251738379613,
+        "peak_hour_mae_mw": 1118.7425806667786
+      },
+      "persistence": {
+        "hours": 2088,
+        "mae_mw": 2146.2509578544064,
+        "rmse_mw": 2724.9044939149435,
+        "wape_percent": 18.975025502586842,
+        "peak_hour_mae_mw": 1153.7701149425288
+      },
+      "weekly_naive": {
+        "hours": 2088,
+        "mae_mw": 1028.6508620689656,
+        "rmse_mw": 1425.7131261594839,
+        "wape_percent": 9.09431223295959,
+        "peak_hour_mae_mw": 1423.5862068965516
+      }
+    }
+  }
+}

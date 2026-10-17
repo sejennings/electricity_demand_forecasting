@@ -127,3 +127,43 @@ evaluation runs reproducibly. Then set up the AWS account/project environment an
 alert before deploying the first storage and scheduled-ingestion milestone. Model evaluation
 does not require AWS. Infrastructure provisioning, account configuration, and deployment
 are not part of the baseline implementation.
+
+## Historical backfill and gradient boosting
+
+The five-year backfill and 2024–2025 evaluation are complete. See
+[historical evaluation](reports/historical_evaluation.md) for coverage, seasonal results,
+assumptions and limitations. With an assumed 24-hour reporting delay, the 2025 model
+achieved 8.28% WAPE versus 10.03% for the strongest baseline.
+
+```powershell
+python -m pip install -e ".[model]"
+# Optional: reproduce the experiment's exact dependency versions (Python 3.12):
+python -m pip install -r requirements-model-lock.txt
+# Official EIA bulk demand plus monthly historical weather (no API key needed):
+python -m gridcast.backfill
+# Monthly expanding refits, shared baseline comparison, seasonal metrics:
+python -m gridcast.research
+# Demonstrate future inference from the final trained artifact:
+python -m gridcast.forecast_model --issue 2026-01-01T00:00:00Z
+```
+
+The EIA bulk download is approximately 697 MB, cached under `data/raw/eia/`.
+Only the requested DUK series is extracted; reruns reuse its cached JSON. To obtain a
+fresh snapshot, archive the cached series and ZIP elsewhere before rerunning.
+Backfill uses fixed DUK/Charlotte geography and 2021–2025 dates. The model experiment
+uses 2021–2023 initial history, 2024 validation and 2025 chronological evaluation;
+model parameters are fixed. Historical data may be revised after the initial download.
+
+`data/models/research/` contains per-hour evaluation predictions, metrics, the final
+`model.joblib`, and issued forecasts. Only load trusted model artifacts. The final model
+is separately refit after evaluation using labels before 2025-12-31 UTC. It cannot be
+used for earlier issue dates; the forecast command checks the training cutoff. The sample
+January 2026 forecast is a workflow demonstration, not a forecast for today's date.
+For current forecasts, extend demand ingestion through the required availability cutoff.
+
+Compact results are tracked in `reports/`; raw data, CSV predictions and model binaries
+remain ignored. The backfill found one missing demand hour; affected evaluation days
+are excluded, never interpolated. Forecast-time weather is still a separate future task.
+
+The project is ready for AWS storage and scheduled ingestion setup. Model computation
+can stay local while that first cloud milestone is implemented.

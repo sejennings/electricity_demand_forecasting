@@ -9,6 +9,9 @@ description = "Electricity demand and weather data ingestion"
 requires-python = ">=3.11"
 dependencies = []
 
+[project.optional-dependencies]
+model = ["scikit-learn>=1.5,<2"]
+
 [project.scripts]
 gridcast-import = "gridcast.ingestion:main"
 gridcast-baseline = "gridcast.baselines:main"
