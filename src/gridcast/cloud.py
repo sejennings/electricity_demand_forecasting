@@ -79,6 +79,7 @@ def curate(event, s3):
     bucket = os.environ['LAKE_BUCKET']
     day = first
     count = 0
+    all_demand, all_weather, all_joined = [], [], []
     while day <= last:
         prefix = partition(day)
         demand = get_json(s3, bucket, f'processed/demand/{prefix}/data.json')
@@ -87,6 +88,9 @@ def curate(event, s3):
         validate(weather, day, day, ['temperature_2m', 'relative_humidity_2m', 'precipitation', 'wind_speed_10m'])
         by_time = {r['timestamp_utc']: r for r in weather}
         rows = [{**r, **{k:v for k,v in by_time[r['timestamp_utc']].items() if k != 'timestamp_utc'}} for r in demand]
+        all_demand.extend(demand)
+        all_weather.extend(weather)
+        all_joined.extend(rows)
         output = io.StringIO(newline='')
         writer = csv.DictWriter(output, fieldnames=list(rows[0]))
         writer.writeheader(); writer.writerows(rows)
@@ -94,7 +98,10 @@ def curate(event, s3):
                       ContentType='text/csv', ServerSideEncryption='AES256')
         count += len(rows)
         day += timedelta(days=1)
-    result = {'rows': count, 'start': str(first), 'end': str(last), 'weather_use': 'historical reanalysis only'}
+    from gridcast.analytics import publish
+    parquet = publish(s3, bucket, all_demand, all_weather, all_joined)
+    result = {'rows': count, 'start': str(first), 'end': str(last), 'weather_use': 'historical reanalysis only',
+              'parquet_objects': len(parquet)}
     put_json(s3, bucket, f'reports/pipeline/run={event["run_id"]}.json', result)
     return result
 

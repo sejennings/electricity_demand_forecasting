@@ -37,7 +37,8 @@ and confirm the selected Region in AWS Settings → View all projects → Overvi
 Additional Info → Region (`us-east-2`). Run from the repository root:
 
 ```powershell
-python -m pip install -e ".[aws,model]"
+python -m pip install -e ".[aws,model,analytics]"
+python scripts/build_arrow_layer.py
 terraform -chdir=infrastructure/terraform init
 # This local file is ignored by Git:
 'alert_email = "you@example.com"' | Set-Content infrastructure/terraform/terraform.tfvars
@@ -92,8 +93,8 @@ it to troubleshoot a failed apply. The provider lockfile is committed for reprod
 The lake has Terraform deletion protection and `force_destroy=false`. To pause costs,
 disable scheduling through Terraform. Destruction requires deliberate removal of the
 lake protection and handling all stored versions; do not run destructive cleanup blindly.
-The next milestone adds Parquet and Glue/Athena; these resources do not claim to provide
-that analytical layer yet.
+The Parquet, Glue and Athena layer is deployed alongside ingestion. See
+[SQL analytics instructions](../sql/README.md) for schemas, historical conversion and queries.
 
 ## Validate
 
@@ -108,5 +109,5 @@ Terraform narrows its S3 actions/resources and secret ARN, omits unused KMS/ACL/
 Lambda actions, and adds runtime log-write permissions. Regenerate the baseline with:
 
 ```powershell
-uvx --python .venv/Scripts/python.exe iam-policy-autopilot@latest generate-policies src/gridcast/cloud.py --region us-east-2 --account <project_aws_id> --service-hints s3 secretsmanager --pretty
+uvx --python .venv/Scripts/python.exe iam-policy-autopilot@latest generate-policies src/gridcast/cloud.py src/gridcast/analytics.py --region us-east-2 --account <project_aws_id> --service-hints s3 secretsmanager --pretty
 ```

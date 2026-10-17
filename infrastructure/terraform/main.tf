@@ -75,6 +75,12 @@ resource "aws_s3_bucket_lifecycle_configuration" "lake" {
     abort_incomplete_multipart_upload { days_after_initiation = 7 }
     noncurrent_version_expiration { noncurrent_days = 30 }
   }
+  rule {
+    id     = "expire-query-results"
+    status = "Enabled"
+    filter { prefix = "athena-results/" }
+    expiration { days = 7 }
+  }
 }
 resource "aws_secretsmanager_secret" "eia" {
   name                    = "gridcast/eia-api-key"
@@ -109,6 +115,8 @@ resource "aws_iam_role_policy" "lambda" {
       Effect = "Allow", Action = s.Action, Resource = [aws_secretsmanager_secret.eia.arn]
     } if contains(s.Action, "secretsmanager:GetSecretValue")],
     [{ Effect = "Allow", Action = ["logs:CreateLogStream", "logs:PutLogEvents"], Resource = "${aws_cloudwatch_log_group.lambda.arn}:*" }]
+    , [{ Effect = "Allow", Action = ["s3:ListBucket"], Resource = aws_s3_bucket.lake.arn,
+    Condition = { StringLike = { "s3:prefix" = "curated/parquet/*" } } }]
   ) })
 }
 data "archive_file" "lambda" {
@@ -125,7 +133,8 @@ resource "aws_lambda_function" "ingestion" {
   handler          = "gridcast.cloud.handler"
   runtime          = "python3.12"
   architectures    = ["arm64"]
-  memory_size      = 256
+  memory_size      = 512
+  layers           = [aws_lambda_layer_version.arrow.arn]
   timeout          = 600
   environment {
     variables = { LAKE_BUCKET = aws_s3_bucket.lake.id, EIA_SECRET_ARN = aws_secretsmanager_secret.eia.arn }

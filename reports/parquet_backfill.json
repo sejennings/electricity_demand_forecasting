@@ -1,0 +1,747 @@
+{
+  "demand_rows": 43991,
+  "weather_rows": 43992,
+  "joined_rows": 43991,
+  "objects": [
+    {
+      "key": "curated/parquet/hourly_demand/region=DUK/year=2021/month=01/part-00000.parquet",
+      "rows": 744
+    },
+    {
+      "key": "curated/parquet/hourly_demand/region=DUK/year=2021/month=02/part-00000.parquet",
+      "rows": 672
+    },
+    {
+      "key": "curated/parquet/hourly_demand/region=DUK/year=2021/month=03/part-00000.parquet",
+      "rows": 744
+    },
+    {
+      "key": "curated/parquet/hourly_demand/region=DUK/year=2021/month=04/part-00000.parquet",
+      "rows": 720
+    },
+    {
+      "key": "curated/parquet/hourly_demand/region=DUK/year=2021/month=05/part-00000.parquet",
+      "rows": 744
+    },
+    {
+      "key": "curated/parquet/hourly_demand/region=DUK/year=2021/month=06/part-00000.parquet",
+      "rows": 720
+    },
+    {
+      "key": "curated/parquet/hourly_demand/region=DUK/year=2021/month=07/part-00000.parquet",
+      "rows": 744
+    },
+    {
+      "key": "curated/parquet/hourly_demand/region=DUK/year=2021/month=08/part-00000.parquet",
+      "rows": 744
+    },
+    {
+      "key": "curated/parquet/hourly_demand/region=DUK/year=2021/month=09/part-00000.parquet",
+      "rows": 720
+    },
+    {
+      "key": "curated/parquet/hourly_demand/region=DUK/year=2021/month=10/part-00000.parquet",
+      "rows": 744
+    },
+    {
+      "key": "curated/parquet/hourly_demand/region=DUK/year=2021/month=11/part-00000.parquet",
+      "rows": 720
+    },
+    {
+      "key": "curated/parquet/hourly_demand/region=DUK/year=2021/month=12/part-00000.parquet",
+      "rows": 744
+    },
+    {
+      "key": "curated/parquet/hourly_demand/region=DUK/year=2022/month=01/part-00000.parquet",
+      "rows": 744
+    },
+    {
+      "key": "curated/parquet/hourly_demand/region=DUK/year=2022/month=02/part-00000.parquet",
+      "rows": 672
+    },
+    {
+      "key": "curated/parquet/hourly_demand/region=DUK/year=2022/month=03/part-00000.parquet",
+      "rows": 744
+    },
+    {
+      "key": "curated/parquet/hourly_demand/region=DUK/year=2022/month=04/part-00000.parquet",
+      "rows": 720
+    },
+    {
+      "key": "curated/parquet/hourly_demand/region=DUK/year=2022/month=05/part-00000.parquet",
+      "rows": 744
+    },
+    {
+      "key": "curated/parquet/hourly_demand/region=DUK/year=2022/month=06/part-00000.parquet",
+      "rows": 720
+    },
+    {
+      "key": "curated/parquet/hourly_demand/region=DUK/year=2022/month=07/part-00000.parquet",
+      "rows": 744
+    },
+    {
+      "key": "curated/parquet/hourly_demand/region=DUK/year=2022/month=08/part-00000.parquet",
+      "rows": 744
+    },
+    {
+      "key": "curated/parquet/hourly_demand/region=DUK/year=2022/month=09/part-00000.parquet",
+      "rows": 720
+    },
+    {
+      "key": "curated/parquet/hourly_demand/region=DUK/year=2022/month=10/part-00000.parquet",
+      "rows": 744
+    },
+    {
+      "key": "curated/parquet/hourly_demand/region=DUK/year=2022/month=11/part-00000.parquet",
+      "rows": 720
+    },
+    {
+      "key": "curated/parquet/hourly_demand/region=DUK/year=2022/month=12/part-00000.parquet",
+      "rows": 744
+    },
+    {
+      "key": "curated/parquet/hourly_demand/region=DUK/year=2023/month=01/part-00000.parquet",
+      "rows": 744
+    },
+    {
+      "key": "curated/parquet/hourly_demand/region=DUK/year=2023/month=02/part-00000.parquet",
+      "rows": 672
+    },
+    {
+      "key": "curated/parquet/hourly_demand/region=DUK/year=2023/month=03/part-00000.parquet",
+      "rows": 744
+    },
+    {
+      "key": "curated/parquet/hourly_demand/region=DUK/year=2023/month=04/part-00000.parquet",
+      "rows": 720
+    },
+    {
+      "key": "curated/parquet/hourly_demand/region=DUK/year=2023/month=05/part-00000.parquet",
+      "rows": 744
+    },
+    {
+      "key": "curated/parquet/hourly_demand/region=DUK/year=2023/month=06/part-00000.parquet",
+      "rows": 720
+    },
+    {
+      "key": "curated/parquet/hourly_demand/region=DUK/year=2023/month=07/part-00000.parquet",
+      "rows": 744
+    },
+    {
+      "key": "curated/parquet/hourly_demand/region=DUK/year=2023/month=08/part-00000.parquet",
+      "rows": 744
+    },
+    {
+      "key": "curated/parquet/hourly_demand/region=DUK/year=2023/month=09/part-00000.parquet",
+      "rows": 720
+    },
+    {
+      "key": "curated/parquet/hourly_demand/region=DUK/year=2023/month=10/part-00000.parquet",
+      "rows": 744
+    },
+    {
+      "key": "curated/parquet/hourly_demand/region=DUK/year=2023/month=11/part-00000.parquet",
+      "rows": 720
+    },
+    {
+      "key": "curated/parquet/hourly_demand/region=DUK/year=2023/month=12/part-00000.parquet",
+      "rows": 744
+    },
+    {
+      "key": "curated/parquet/hourly_demand/region=DUK/year=2024/month=01/part-00000.parquet",
+      "rows": 744
+    },
+    {
+      "key": "curated/parquet/hourly_demand/region=DUK/year=2024/month=02/part-00000.parquet",
+      "rows": 696
+    },
+    {
+      "key": "curated/parquet/hourly_demand/region=DUK/year=2024/month=03/part-00000.parquet",
+      "rows": 744
+    },
+    {
+      "key": "curated/parquet/hourly_demand/region=DUK/year=2024/month=04/part-00000.parquet",
+      "rows": 720
+    },
+    {
+      "key": "curated/parquet/hourly_demand/region=DUK/year=2024/month=05/part-00000.parquet",
+      "rows": 744
+    },
+    {
+      "key": "curated/parquet/hourly_demand/region=DUK/year=2024/month=06/part-00000.parquet",
+      "rows": 720
+    },
+    {
+      "key": "curated/parquet/hourly_demand/region=DUK/year=2024/month=07/part-00000.parquet",
+      "rows": 744
+    },
+    {
+      "key": "curated/parquet/hourly_demand/region=DUK/year=2024/month=08/part-00000.parquet",
+      "rows": 744
+    },
+    {
+      "key": "curated/parquet/hourly_demand/region=DUK/year=2024/month=09/part-00000.parquet",
+      "rows": 720
+    },
+    {
+      "key": "curated/parquet/hourly_demand/region=DUK/year=2024/month=10/part-00000.parquet",
+      "rows": 744
+    },
+    {
+      "key": "curated/parquet/hourly_demand/region=DUK/year=2024/month=11/part-00000.parquet",
+      "rows": 720
+    },
+    {
+      "key": "curated/parquet/hourly_demand/region=DUK/year=2024/month=12/part-00000.parquet",
+      "rows": 744
+    },
+    {
+      "key": "curated/parquet/hourly_demand/region=DUK/year=2025/month=01/part-00000.parquet",
+      "rows": 744
+    },
+    {
+      "key": "curated/parquet/hourly_demand/region=DUK/year=2025/month=02/part-00000.parquet",
+      "rows": 672
+    },
+    {
+      "key": "curated/parquet/hourly_demand/region=DUK/year=2025/month=03/part-00000.parquet",
+      "rows": 744
+    },
+    {
+      "key": "curated/parquet/hourly_demand/region=DUK/year=2025/month=04/part-00000.parquet",
+      "rows": 720
+    },
+    {
+      "key": "curated/parquet/hourly_demand/region=DUK/year=2025/month=05/part-00000.parquet",
+      "rows": 744
+    },
+    {
+      "key": "curated/parquet/hourly_demand/region=DUK/year=2025/month=06/part-00000.parquet",
+      "rows": 720
+    },
+    {
+      "key": "curated/parquet/hourly_demand/region=DUK/year=2025/month=07/part-00000.parquet",
+      "rows": 744
+    },
+    {
+      "key": "curated/parquet/hourly_demand/region=DUK/year=2025/month=08/part-00000.parquet",
+      "rows": 744
+    },
+    {
+      "key": "curated/parquet/hourly_demand/region=DUK/year=2025/month=09/part-00000.parquet",
+      "rows": 720
+    },
+    {
+      "key": "curated/parquet/hourly_demand/region=DUK/year=2025/month=10/part-00000.parquet",
+      "rows": 744
+    },
+    {
+      "key": "curated/parquet/hourly_demand/region=DUK/year=2025/month=11/part-00000.parquet",
+      "rows": 719
+    },
+    {
+      "key": "curated/parquet/hourly_demand/region=DUK/year=2025/month=12/part-00000.parquet",
+      "rows": 744
+    },
+    {
+      "key": "curated/parquet/hourly_demand/region=DUK/year=2026/month=10/part-00000.parquet",
+      "rows": 168
+    },
+    {
+      "key": "curated/parquet/hourly_weather/region=DUK/year=2021/month=01/part-00000.parquet",
+      "rows": 744
+    },
+    {
+      "key": "curated/parquet/hourly_weather/region=DUK/year=2021/month=02/part-00000.parquet",
+      "rows": 672
+    },
+    {
+      "key": "curated/parquet/hourly_weather/region=DUK/year=2021/month=03/part-00000.parquet",
+      "rows": 744
+    },
+    {
+      "key": "curated/parquet/hourly_weather/region=DUK/year=2021/month=04/part-00000.parquet",
+      "rows": 720
+    },
+    {
+      "key": "curated/parquet/hourly_weather/region=DUK/year=2021/month=05/part-00000.parquet",
+      "rows": 744
+    },
+    {
+      "key": "curated/parquet/hourly_weather/region=DUK/year=2021/month=06/part-00000.parquet",
+      "rows": 720
+    },
+    {
+      "key": "curated/parquet/hourly_weather/region=DUK/year=2021/month=07/part-00000.parquet",
+      "rows": 744
+    },
+    {
+      "key": "curated/parquet/hourly_weather/region=DUK/year=2021/month=08/part-00000.parquet",
+      "rows": 744
+    },
+    {
+      "key": "curated/parquet/hourly_weather/region=DUK/year=2021/month=09/part-00000.parquet",
+      "rows": 720
+    },
+    {
+      "key": "curated/parquet/hourly_weather/region=DUK/year=2021/month=10/part-00000.parquet",
+      "rows": 744
+    },
+    {
+      "key": "curated/parquet/hourly_weather/region=DUK/year=2021/month=11/part-00000.parquet",
+      "rows": 720
+    },
+    {
+      "key": "curated/parquet/hourly_weather/region=DUK/year=2021/month=12/part-00000.parquet",
+      "rows": 744
+    },
+    {
+      "key": "curated/parquet/hourly_weather/region=DUK/year=2022/month=01/part-00000.parquet",
+      "rows": 744
+    },
+    {
+      "key": "curated/parquet/hourly_weather/region=DUK/year=2022/month=02/part-00000.parquet",
+      "rows": 672
+    },
+    {
+      "key": "curated/parquet/hourly_weather/region=DUK/year=2022/month=03/part-00000.parquet",
+      "rows": 744
+    },
+    {
+      "key": "curated/parquet/hourly_weather/region=DUK/year=2022/month=04/part-00000.parquet",
+      "rows": 720
+    },
+    {
+      "key": "curated/parquet/hourly_weather/region=DUK/year=2022/month=05/part-00000.parquet",
+      "rows": 744
+    },
+    {
+      "key": "curated/parquet/hourly_weather/region=DUK/year=2022/month=06/part-00000.parquet",
+      "rows": 720
+    },
+    {
+      "key": "curated/parquet/hourly_weather/region=DUK/year=2022/month=07/part-00000.parquet",
+      "rows": 744
+    },
+    {
+      "key": "curated/parquet/hourly_weather/region=DUK/year=2022/month=08/part-00000.parquet",
+      "rows": 744
+    },
+    {
+      "key": "curated/parquet/hourly_weather/region=DUK/year=2022/month=09/part-00000.parquet",
+      "rows": 720
+    },
+    {
+      "key": "curated/parquet/hourly_weather/region=DUK/year=2022/month=10/part-00000.parquet",
+      "rows": 744
+    },
+    {
+      "key": "curated/parquet/hourly_weather/region=DUK/year=2022/month=11/part-00000.parquet",
+      "rows": 720
+    },
+    {
+      "key": "curated/parquet/hourly_weather/region=DUK/year=2022/month=12/part-00000.parquet",
+      "rows": 744
+    },
+    {
+      "key": "curated/parquet/hourly_weather/region=DUK/year=2023/month=01/part-00000.parquet",
+      "rows": 744
+    },
+    {
+      "key": "curated/parquet/hourly_weather/region=DUK/year=2023/month=02/part-00000.parquet",
+      "rows": 672
+    },
+    {
+      "key": "curated/parquet/hourly_weather/region=DUK/year=2023/month=03/part-00000.parquet",
+      "rows": 744
+    },
+    {
+      "key": "curated/parquet/hourly_weather/region=DUK/year=2023/month=04/part-00000.parquet",
+      "rows": 720
+    },
+    {
+      "key": "curated/parquet/hourly_weather/region=DUK/year=2023/month=05/part-00000.parquet",
+      "rows": 744
+    },
+    {
+      "key": "curated/parquet/hourly_weather/region=DUK/year=2023/month=06/part-00000.parquet",
+      "rows": 720
+    },
+    {
+      "key": "curated/parquet/hourly_weather/region=DUK/year=2023/month=07/part-00000.parquet",
+      "rows": 744
+    },
+    {
+      "key": "curated/parquet/hourly_weather/region=DUK/year=2023/month=08/part-00000.parquet",
+      "rows": 744
+    },
+    {
+      "key": "curated/parquet/hourly_weather/region=DUK/year=2023/month=09/part-00000.parquet",
+      "rows": 720
+    },
+    {
+      "key": "curated/parquet/hourly_weather/region=DUK/year=2023/month=10/part-00000.parquet",
+      "rows": 744
+    },
+    {
+      "key": "curated/parquet/hourly_weather/region=DUK/year=2023/month=11/part-00000.parquet",
+      "rows": 720
+    },
+    {
+      "key": "curated/parquet/hourly_weather/region=DUK/year=2023/month=12/part-00000.parquet",
+      "rows": 744
+    },
+    {
+      "key": "curated/parquet/hourly_weather/region=DUK/year=2024/month=01/part-00000.parquet",
+      "rows": 744
+    },
+    {
+      "key": "curated/parquet/hourly_weather/region=DUK/year=2024/month=02/part-00000.parquet",
+      "rows": 696
+    },
+    {
+      "key": "curated/parquet/hourly_weather/region=DUK/year=2024/month=03/part-00000.parquet",
+      "rows": 744
+    },
+    {
+      "key": "curated/parquet/hourly_weather/region=DUK/year=2024/month=04/part-00000.parquet",
+      "rows": 720
+    },
+    {
+      "key": "curated/parquet/hourly_weather/region=DUK/year=2024/month=05/part-00000.parquet",
+      "rows": 744
+    },
+    {
+      "key": "curated/parquet/hourly_weather/region=DUK/year=2024/month=06/part-00000.parquet",
+      "rows": 720
+    },
+    {
+      "key": "curated/parquet/hourly_weather/region=DUK/year=2024/month=07/part-00000.parquet",
+      "rows": 744
+    },
+    {
+      "key": "curated/parquet/hourly_weather/region=DUK/year=2024/month=08/part-00000.parquet",
+      "rows": 744
+    },
+    {
+      "key": "curated/parquet/hourly_weather/region=DUK/year=2024/month=09/part-00000.parquet",
+      "rows": 720
+    },
+    {
+      "key": "curated/parquet/hourly_weather/region=DUK/year=2024/month=10/part-00000.parquet",
+      "rows": 744
+    },
+    {
+      "key": "curated/parquet/hourly_weather/region=DUK/year=2024/month=11/part-00000.parquet",
+      "rows": 720
+    },
+    {
+      "key": "curated/parquet/hourly_weather/region=DUK/year=2024/month=12/part-00000.parquet",
+      "rows": 744
+    },
+    {
+      "key": "curated/parquet/hourly_weather/region=DUK/year=2025/month=01/part-00000.parquet",
+      "rows": 744
+    },
+    {
+      "key": "curated/parquet/hourly_weather/region=DUK/year=2025/month=02/part-00000.parquet",
+      "rows": 672
+    },
+    {
+      "key": "curated/parquet/hourly_weather/region=DUK/year=2025/month=03/part-00000.parquet",
+      "rows": 744
+    },
+    {
+      "key": "curated/parquet/hourly_weather/region=DUK/year=2025/month=04/part-00000.parquet",
+      "rows": 720
+    },
+    {
+      "key": "curated/parquet/hourly_weather/region=DUK/year=2025/month=05/part-00000.parquet",
+      "rows": 744
+    },
+    {
+      "key": "curated/parquet/hourly_weather/region=DUK/year=2025/month=06/part-00000.parquet",
+      "rows": 720
+    },
+    {
+      "key": "curated/parquet/hourly_weather/region=DUK/year=2025/month=07/part-00000.parquet",
+      "rows": 744
+    },
+    {
+      "key": "curated/parquet/hourly_weather/region=DUK/year=2025/month=08/part-00000.parquet",
+      "rows": 744
+    },
+    {
+      "key": "curated/parquet/hourly_weather/region=DUK/year=2025/month=09/part-00000.parquet",
+      "rows": 720
+    },
+    {
+      "key": "curated/parquet/hourly_weather/region=DUK/year=2025/month=10/part-00000.parquet",
+      "rows": 744
+    },
+    {
+      "key": "curated/parquet/hourly_weather/region=DUK/year=2025/month=11/part-00000.parquet",
+      "rows": 720
+    },
+    {
+      "key": "curated/parquet/hourly_weather/region=DUK/year=2025/month=12/part-00000.parquet",
+      "rows": 744
+    },
+    {
+      "key": "curated/parquet/hourly_weather/region=DUK/year=2026/month=10/part-00000.parquet",
+      "rows": 168
+    },
+    {
+      "key": "curated/parquet/hourly_demand_weather/region=DUK/year=2021/month=01/part-00000.parquet",
+      "rows": 744
+    },
+    {
+      "key": "curated/parquet/hourly_demand_weather/region=DUK/year=2021/month=02/part-00000.parquet",
+      "rows": 672
+    },
+    {
+      "key": "curated/parquet/hourly_demand_weather/region=DUK/year=2021/month=03/part-00000.parquet",
+      "rows": 744
+    },
+    {
+      "key": "curated/parquet/hourly_demand_weather/region=DUK/year=2021/month=04/part-00000.parquet",
+      "rows": 720
+    },
+    {
+      "key": "curated/parquet/hourly_demand_weather/region=DUK/year=2021/month=05/part-00000.parquet",
+      "rows": 744
+    },
+    {
+      "key": "curated/parquet/hourly_demand_weather/region=DUK/year=2021/month=06/part-00000.parquet",
+      "rows": 720
+    },
+    {
+      "key": "curated/parquet/hourly_demand_weather/region=DUK/year=2021/month=07/part-00000.parquet",
+      "rows": 744
+    },
+    {
+      "key": "curated/parquet/hourly_demand_weather/region=DUK/year=2021/month=08/part-00000.parquet",
+      "rows": 744
+    },
+    {
+      "key": "curated/parquet/hourly_demand_weather/region=DUK/year=2021/month=09/part-00000.parquet",
+      "rows": 720
+    },
+    {
+      "key": "curated/parquet/hourly_demand_weather/region=DUK/year=2021/month=10/part-00000.parquet",
+      "rows": 744
+    },
+    {
+      "key": "curated/parquet/hourly_demand_weather/region=DUK/year=2021/month=11/part-00000.parquet",
+      "rows": 720
+    },
+    {
+      "key": "curated/parquet/hourly_demand_weather/region=DUK/year=2021/month=12/part-00000.parquet",
+      "rows": 744
+    },
+    {
+      "key": "curated/parquet/hourly_demand_weather/region=DUK/year=2022/month=01/part-00000.parquet",
+      "rows": 744
+    },
+    {
+      "key": "curated/parquet/hourly_demand_weather/region=DUK/year=2022/month=02/part-00000.parquet",
+      "rows": 672
+    },
+    {
+      "key": "curated/parquet/hourly_demand_weather/region=DUK/year=2022/month=03/part-00000.parquet",
+      "rows": 744
+    },
+    {
+      "key": "curated/parquet/hourly_demand_weather/region=DUK/year=2022/month=04/part-00000.parquet",
+      "rows": 720
+    },
+    {
+      "key": "curated/parquet/hourly_demand_weather/region=DUK/year=2022/month=05/part-00000.parquet",
+      "rows": 744
+    },
+    {
+      "key": "curated/parquet/hourly_demand_weather/region=DUK/year=2022/month=06/part-00000.parquet",
+      "rows": 720
+    },
+    {
+      "key": "curated/parquet/hourly_demand_weather/region=DUK/year=2022/month=07/part-00000.parquet",
+      "rows": 744
+    },
+    {
+      "key": "curated/parquet/hourly_demand_weather/region=DUK/year=2022/month=08/part-00000.parquet",
+      "rows": 744
+    },
+    {
+      "key": "curated/parquet/hourly_demand_weather/region=DUK/year=2022/month=09/part-00000.parquet",
+      "rows": 720
+    },
+    {
+      "key": "curated/parquet/hourly_demand_weather/region=DUK/year=2022/month=10/part-00000.parquet",
+      "rows": 744
+    },
+    {
+      "key": "curated/parquet/hourly_demand_weather/region=DUK/year=2022/month=11/part-00000.parquet",
+      "rows": 720
+    },
+    {
+      "key": "curated/parquet/hourly_demand_weather/region=DUK/year=2022/month=12/part-00000.parquet",
+      "rows": 744
+    },
+    {
+      "key": "curated/parquet/hourly_demand_weather/region=DUK/year=2023/month=01/part-00000.parquet",
+      "rows": 744
+    },
+    {
+      "key": "curated/parquet/hourly_demand_weather/region=DUK/year=2023/month=02/part-00000.parquet",
+      "rows": 672
+    },
+    {
+      "key": "curated/parquet/hourly_demand_weather/region=DUK/year=2023/month=03/part-00000.parquet",
+      "rows": 744
+    },
+    {
+      "key": "curated/parquet/hourly_demand_weather/region=DUK/year=2023/month=04/part-00000.parquet",
+      "rows": 720
+    },
+    {
+      "key": "curated/parquet/hourly_demand_weather/region=DUK/year=2023/month=05/part-00000.parquet",
+      "rows": 744
+    },
+    {
+      "key": "curated/parquet/hourly_demand_weather/region=DUK/year=2023/month=06/part-00000.parquet",
+      "rows": 720
+    },
+    {
+      "key": "curated/parquet/hourly_demand_weather/region=DUK/year=2023/month=07/part-00000.parquet",
+      "rows": 744
+    },
+    {
+      "key": "curated/parquet/hourly_demand_weather/region=DUK/year=2023/month=08/part-00000.parquet",
+      "rows": 744
+    },
+    {
+      "key": "curated/parquet/hourly_demand_weather/region=DUK/year=2023/month=09/part-00000.parquet",
+      "rows": 720
+    },
+    {
+      "key": "curated/parquet/hourly_demand_weather/region=DUK/year=2023/month=10/part-00000.parquet",
+      "rows": 744
+    },
+    {
+      "key": "curated/parquet/hourly_demand_weather/region=DUK/year=2023/month=11/part-00000.parquet",
+      "rows": 720
+    },
+    {
+      "key": "curated/parquet/hourly_demand_weather/region=DUK/year=2023/month=12/part-00000.parquet",
+      "rows": 744
+    },
+    {
+      "key": "curated/parquet/hourly_demand_weather/region=DUK/year=2024/month=01/part-00000.parquet",
+      "rows": 744
+    },
+    {
+      "key": "curated/parquet/hourly_demand_weather/region=DUK/year=2024/month=02/part-00000.parquet",
+      "rows": 696
+    },
+    {
+      "key": "curated/parquet/hourly_demand_weather/region=DUK/year=2024/month=03/part-00000.parquet",
+      "rows": 744
+    },
+    {
+      "key": "curated/parquet/hourly_demand_weather/region=DUK/year=2024/month=04/part-00000.parquet",
+      "rows": 720
+    },
+    {
+      "key": "curated/parquet/hourly_demand_weather/region=DUK/year=2024/month=05/part-00000.parquet",
+      "rows": 744
+    },
+    {
+      "key": "curated/parquet/hourly_demand_weather/region=DUK/year=2024/month=06/part-00000.parquet",
+      "rows": 720
+    },
+    {
+      "key": "curated/parquet/hourly_demand_weather/region=DUK/year=2024/month=07/part-00000.parquet",
+      "rows": 744
+    },
+    {
+      "key": "curated/parquet/hourly_demand_weather/region=DUK/year=2024/month=08/part-00000.parquet",
+      "rows": 744
+    },
+    {
+      "key": "curated/parquet/hourly_demand_weather/region=DUK/year=2024/month=09/part-00000.parquet",
+      "rows": 720
+    },
+    {
+      "key": "curated/parquet/hourly_demand_weather/region=DUK/year=2024/month=10/part-00000.parquet",
+      "rows": 744
+    },
+    {
+      "key": "curated/parquet/hourly_demand_weather/region=DUK/year=2024/month=11/part-00000.parquet",
+      "rows": 720
+    },
+    {
+      "key": "curated/parquet/hourly_demand_weather/region=DUK/year=2024/month=12/part-00000.parquet",
+      "rows": 744
+    },
+    {
+      "key": "curated/parquet/hourly_demand_weather/region=DUK/year=2025/month=01/part-00000.parquet",
+      "rows": 744
+    },
+    {
+      "key": "curated/parquet/hourly_demand_weather/region=DUK/year=2025/month=02/part-00000.parquet",
+      "rows": 672
+    },
+    {
+      "key": "curated/parquet/hourly_demand_weather/region=DUK/year=2025/month=03/part-00000.parquet",
+      "rows": 744
+    },
+    {
+      "key": "curated/parquet/hourly_demand_weather/region=DUK/year=2025/month=04/part-00000.parquet",
+      "rows": 720
+    },
+    {
+      "key": "curated/parquet/hourly_demand_weather/region=DUK/year=2025/month=05/part-00000.parquet",
+      "rows": 744
+    },
+    {
+      "key": "curated/parquet/hourly_demand_weather/region=DUK/year=2025/month=06/part-00000.parquet",
+      "rows": 720
+    },
+    {
+      "key": "curated/parquet/hourly_demand_weather/region=DUK/year=2025/month=07/part-00000.parquet",
+      "rows": 744
+    },
+    {
+      "key": "curated/parquet/hourly_demand_weather/region=DUK/year=2025/month=08/part-00000.parquet",
+      "rows": 744
+    },
+    {
+      "key": "curated/parquet/hourly_demand_weather/region=DUK/year=2025/month=09/part-00000.parquet",
+      "rows": 720
+    },
+    {
+      "key": "curated/parquet/hourly_demand_weather/region=DUK/year=2025/month=10/part-00000.parquet",
+      "rows": 744
+    },
+    {
+      "key": "curated/parquet/hourly_demand_weather/region=DUK/year=2025/month=11/part-00000.parquet",
+      "rows": 719
+    },
+    {
+      "key": "curated/parquet/hourly_demand_weather/region=DUK/year=2025/month=12/part-00000.parquet",
+      "rows": 744
+    },
+    {
+      "key": "curated/parquet/hourly_demand_weather/region=DUK/year=2026/month=10/part-00000.parquet",
+      "rows": 168
+    },
+    {
+      "key": "curated/parquet/dim_calendar/part-00000.parquet",
+      "rows": 1833
+    },
+    {
+      "key": "curated/parquet/dim_region/part-00000.parquet",
+      "rows": 1
+    }
+  ]
+}

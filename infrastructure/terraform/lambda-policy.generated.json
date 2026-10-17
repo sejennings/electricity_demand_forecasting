@@ -42,6 +42,7 @@
             "Effect": "Allow",
             "Action": [
               "s3:GetObject",
+              "s3:GetObjectAcl",
               "s3:GetObjectLegalHold",
               "s3:GetObjectRetention",
               "s3:GetObjectTagging",
@@ -69,12 +70,32 @@
           {
             "Effect": "Allow",
             "Action": [
+              "s3:ListBucket"
+            ],
+            "Resource": [
+              "arn:aws:s3:::*",
+              "arn:aws:s3:us-east-2:456112636403:accesspoint/*"
+            ]
+          },
+          {
+            "Effect": "Allow",
+            "Action": [
               "s3-object-lambda:GetObject",
               "s3-object-lambda:PutObject"
             ],
             "Resource": [
               "arn:aws:s3:::*/*",
               "arn:aws:s3:us-east-2:456112636403:accesspoint/*/object/*"
+            ]
+          },
+          {
+            "Effect": "Allow",
+            "Action": [
+              "s3-object-lambda:ListBucket"
+            ],
+            "Resource": [
+              "arn:aws:s3:::*",
+              "arn:aws:s3:us-east-2:456112636403:accesspoint/*"
             ]
           },
           {

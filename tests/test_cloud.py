@@ -9,13 +9,19 @@ from gridcast.cloud import curate, ingest, partition, validate, window
 class FakeS3:
     def __init__(self):
         self.objects = {}
+        self.etags = {}
 
     def put_object(self, **kwargs):
         self.objects[kwargs['Key']] = kwargs['Body']
+        self.etags[kwargs['Key']] = str(len(self.etags) + 1)
 
     def get_object(self, **kwargs):
         import io
-        return {'Body': io.BytesIO(self.objects[kwargs['Key']])}
+        return {'Body': io.BytesIO(self.objects[kwargs['Key']]), 'ETag': self.etags.get(kwargs['Key'], 'initial')}
+
+    def list_objects_v2(self, **kwargs):
+        keys = sorted(k for k in self.objects if k.startswith(kwargs['Prefix']))[:kwargs.get('MaxKeys',1000)]
+        return {'Contents':[{'Key':k} for k in keys]}
 
     def upload_file(self, *args, **kwargs):
         pass
@@ -41,7 +47,8 @@ class CloudTests(unittest.TestCase):
         for hour in range(24):
             ts = f'2025-01-01T{hour:02}:00:00Z'
             demand.append(dict(timestamp_utc=ts, region='DUK', demand_mw=100))
-            weather.append(dict(timestamp_utc=ts, temperature_2m=10, relative_humidity_2m=50, precipitation=0, wind_speed_10m=1))
+            weather.append(dict(timestamp_utc=ts, temperature_2m=10, relative_humidity_2m=50, precipitation=0,
+                                wind_speed_10m=1, latitude=35.2271, longitude=-80.8431, weather_source='open-meteo-era5'))
         prefix = partition(date(2025,1,1))
         for source, rows in [('demand',demand),('weather',weather)]:
             s3.objects[f'processed/{source}/{prefix}/data.json'] = json.dumps(rows).encode()

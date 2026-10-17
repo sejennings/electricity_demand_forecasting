@@ -60,12 +60,13 @@ licensing, attribution, rate limits, and commercial-use terms.
 
 Historical reanalysis is suitable for exploration, but is **not forecast-time weather**.
 Do not use future reanalysis values as known inputs in realistic forecasting backtests.
-Historical weather forecasts, NOAA station imports, multi-point aggregation, Parquet,
-and AWS deployment are future steps.
+Historical weather forecasts, NOAA station imports and multi-point weather aggregation
+remain future steps. Parquet and the AWS data lake are implemented below.
 
 ## Tests
 
 ```powershell
+python -m pip install -e ".[model,analytics]"
 python -m unittest discover -s tests -v
 ```
 
@@ -165,14 +166,29 @@ Compact results are tracked in `reports/`; raw data, CSV predictions and model b
 remain ignored. The backfill found one missing demand hour; affected evaluation days
 are excluded, never interpolated. Forecast-time weather is still a separate future task.
 
-The project is ready for AWS storage and scheduled ingestion setup. Model computation
-can stay local while that first cloud milestone is implemented.
+AWS storage, scheduled ingestion and the analytics layer are now deployed. Model
+training can continue locally until the container deployment milestone.
 
 ## AWS data lake
 
 The first AWS milestone is deployed with Terraform infrastructure and Lambda ingestion code.
-See the [deployment status](reports/aws_deployment.md) for verified checks and remaining activation.
+See the [deployment status](reports/aws_deployment.md) for verified checks.
 See [infrastructure instructions](infrastructure/README.md) for deployment, secure EIA
 key setup, cloud smoke tests, scheduling, alerts and cost controls. Infrastructure targets
 `us-east-2` with the `default` profile. The schedule defaults to disabled until a successful
-manual run verifies both sources. Parquet and Glue/Athena remain the next milestone.
+manual run verifies both sources; the deployed schedule is now enabled.
+
+## Parquet, Glue and Athena
+
+The `gridcast` Glue database contains three hourly Parquet tables and region/calendar
+dimensions. The `gridcast-analytics` Athena workgroup has five reporting views and saved
+queries for daily peaks, seasonality, weather relationships and completeness.
+
+The 2021–2025 history contains 43,823 demand/joined hours and 43,824 weather hours.
+The known missing demand hour remains visible in the completeness report. Seven days
+of cloud-imported October 2026 data are also queryable. The daily pipeline updates monthly
+Parquet partitions without discarding prior hours. Live Athena queries and a seven-day
+workflow run verified row counts, uniqueness, null checks and incremental preservation.
+
+See [SQL analytics instructions](sql/README.md) and
+[analytics validation](reports/analytics_deployment.md) for schemas, commands and evidence.

@@ -37,7 +37,8 @@ The first automatic daily invocation will still need to be checked after its sch
 
 No EIA key is in Terraform variables or source control. Regional services remain in
 us-east-2. The budget uses the global billing endpoint only. The original project’s next
-analytics milestone remains Parquet, Glue Data Catalog and Athena.
+analytics milestone (Parquet, Glue Data Catalog and Athena) is now also complete; see
+[analytics deployment](analytics_deployment.md).
 
 See [deployment runbook](../infrastructure/README.md) for commands, architecture,
 cost implications and lifecycle controls. Preserve the local Terraform state securely.
