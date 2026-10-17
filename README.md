@@ -167,3 +167,12 @@ are excluded, never interpolated. Forecast-time weather is still a separate futu
 
 The project is ready for AWS storage and scheduled ingestion setup. Model computation
 can stay local while that first cloud milestone is implemented.
+
+## AWS data lake
+
+The first AWS milestone is deployed with Terraform infrastructure and Lambda ingestion code.
+See the [deployment status](reports/aws_deployment.md) for verified checks and remaining activation.
+See [infrastructure instructions](infrastructure/README.md) for deployment, secure EIA
+key setup, cloud smoke tests, scheduling, alerts and cost controls. Infrastructure targets
+`us-east-2` with the `default` profile. The schedule defaults to disabled until a successful
+manual run verifies both sources. Parquet and Glue/Athena remain the next milestone.
