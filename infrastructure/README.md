@@ -116,3 +116,17 @@ Lambda actions, and adds runtime log-write permissions. Regenerate the baseline 
 ```powershell
 uvx --python .venv/Scripts/python.exe iam-policy-autopilot@latest generate-policies src/gridcast/cloud.py src/gridcast/analytics.py --region us-east-2 --account <project_aws_id> --service-hints s3 secretsmanager --pretty
 ```
+# Daily Fargate forecasting
+
+`forecasting.tf` adds the ECR repository, task roles, dedicated subnet, Fargate
+task, Step Functions completion monitoring and daily forecast schedule. See
+[deployment and scoring operations](../docs/scheduled-forecasts.md).
+
+Set `forecast_model_sha256` in ignored `terraform.tfvars` to the trained model's
+SHA-256. Upload that trusted artifact to `models/weather/<hash>.joblib` in the
+lake. Initially leave `forecast_schedule_enabled=false`; create the repository,
+push an immutable image tag and set `forecast_image_digest` to the returned
+`sha256:...` digest. Apply, run a manual workflow, then enable the schedule.
+The job verifies the model hash before loading it. No datasets or credentials
+belong in the Docker build context or Terraform inputs.
+

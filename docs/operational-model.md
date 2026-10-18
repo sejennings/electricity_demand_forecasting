@@ -2,7 +2,8 @@
 
 These commands collect information available now, train the evaluated demand/calendar
 model, and issue a future 24-hour forecast. They do not publish a container to ECR or
-create an ECS task; that remains the next deployment step.
+create an ECS task. The separate [scheduled forecast deployment](scheduled-forecasts.md)
+publishes the image and runs the weather-aware model daily on Fargate.
 
 ## Source timing
 

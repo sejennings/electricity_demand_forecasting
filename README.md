@@ -211,4 +211,6 @@ evaluation, availability assumptions and Docker commands.
 See [operational modeling instructions](docs/operational-model.md) for tested Docker
 commands, snapshot timing, training cutoffs and limitations. Validation evidence is in
 [operational/container validation](reports/operational_container_validation.json).
-Publishing the image to ECR and scheduling ECS tasks remain the next deployment step.
+Daily Fargate forecasting and delayed actual-demand scoring are configured with
+Terraform. See [scheduled forecasts](docs/scheduled-forecasts.md) for the 14:30 UTC
+schedule, immutable issue records, score revisions, operations and open image findings.

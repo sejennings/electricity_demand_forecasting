@@ -124,9 +124,12 @@ def handler(event, context):
                         row['demand_mw']=float(row['demand_mw'])
                         demand.append(row)
             publish(s3,os.environ['LAKE_BUCKET'],demand,[],[])
+            from gridcast.scoring import score_archive
+            scores=score_archive(s3,os.environ['LAKE_BUCKET'],datetime.now(timezone.utc),
+                {r['timestamp_utc']:r['demand_mw'] for r in demand},manifest['snapshot_id'])
         return {'snapshot_id':manifest['snapshot_id'],'manifest_key':manifest_key,
                 'latest_observation_utc':manifest['demand']['latest_observation_utc'],
-                'weather_rows':manifest['weather_rows']}
+                'weather_rows':manifest['weather_rows'],'scores':scores}
     if event.get('action') == 'curate':
         return curate(event, s3)
     return ingest(event, s3, boto3.client('secretsmanager'))

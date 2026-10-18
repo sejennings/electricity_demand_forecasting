@@ -115,14 +115,15 @@ resource "aws_iam_role_policy" "lambda" {
     [for s in local.generated : {
       Effect   = "Allow"
       Action   = [for a in s.Action : a if contains(["s3:GetObject", "s3:PutObject"], a)]
-      Resource = [for prefix in ["raw", "processed", "curated", "reports"] : "${aws_s3_bucket.lake.arn}/${prefix}/*"]
+      Resource = [for prefix in ["raw", "processed", "curated", "reports", "scores"] : "${aws_s3_bucket.lake.arn}/${prefix}/*"]
     } if contains(s.Action, "s3:PutObject")],
     [for s in local.generated : {
       Effect = "Allow", Action = s.Action, Resource = [aws_secretsmanager_secret.eia.arn]
     } if contains(s.Action, "secretsmanager:GetSecretValue")],
     [{ Effect = "Allow", Action = ["logs:CreateLogStream", "logs:PutLogEvents"], Resource = "${aws_cloudwatch_log_group.lambda.arn}:*" }]
     , [{ Effect = "Allow", Action = ["s3:ListBucket"], Resource = aws_s3_bucket.lake.arn,
-    Condition = { StringLike = { "s3:prefix" = "curated/parquet/*" } } }]
+      Condition = { StringLike = { "s3:prefix" = ["curated/parquet/*", "forecasts/runs/*", "scores/runs/*"] } } },
+    { Effect = "Allow", Action = ["s3:GetObject"], Resource = "${aws_s3_bucket.lake.arn}/forecasts/*" }]
   ) })
 }
 data "archive_file" "lambda" {
@@ -214,7 +215,7 @@ resource "aws_iam_role" "scheduler" {
 resource "aws_iam_role_policy" "scheduler" {
   role = aws_iam_role.scheduler.id
   policy = jsonencode({ Version = "2012-10-17", Statement = [
-    { Effect = "Allow", Action = ["states:StartExecution"], Resource = aws_sfn_state_machine.ingestion.arn },
+    { Effect = "Allow", Action = ["states:StartExecution"], Resource = [aws_sfn_state_machine.ingestion.arn, local.forecast_workflow] },
     { Effect = "Allow", Action = ["sqs:SendMessage"], Resource = aws_sqs_queue.scheduler_dlq.arn }
   ] })
 }
