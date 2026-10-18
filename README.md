@@ -192,3 +192,23 @@ workflow run verified row counts, uniqueness, null checks and incremental preser
 
 See [SQL analytics instructions](sql/README.md) and
 [analytics validation](reports/analytics_deployment.md) for schemas, commands and evidence.
+
+## Live inputs and Docker modeling
+
+Current GFS weather forecasts and recent EIA demand are archived as immutable,
+collection-time snapshots. The existing daily workflow now collects these operational
+inputs after historical curation, and updates actual-demand Parquet through the latest
+available completed hour. Historical ERA5 weather keeps its existing publication lag.
+
+`gridcast.jobs` provides separate `import-live`, `train` and `forecast` commands.
+The non-root Docker image pins its base and runtime dependencies. Training and inference
+have both been verified in Docker; inference produces 24 future hourly predictions with
+networking disabled. Optional `train --weather-vintages` learns from archived GFS runs,
+with timing guards and a shared weather feature schema for inference. See
+[weather-vintage training](docs/weather-vintage-training.md) for backfill, paired monthly
+evaluation, availability assumptions and Docker commands.
+
+See [operational modeling instructions](docs/operational-model.md) for tested Docker
+commands, snapshot timing, training cutoffs and limitations. Validation evidence is in
+[operational/container validation](reports/operational_container_validation.json).
+Publishing the image to ECR and scheduling ECS tasks remain the next deployment step.

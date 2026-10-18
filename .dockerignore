@@ -1,0 +1,9 @@
+**
+!Dockerfile
+!pyproject.toml
+!requirements-model-lock.txt
+!requirements-runtime-lock.txt
+!src/
+!src/**
+src/**/__pycache__/
+src/**/*.pyc

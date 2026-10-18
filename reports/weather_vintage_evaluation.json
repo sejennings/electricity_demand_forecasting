@@ -1,0 +1,146 @@
+{
+  "protocol": "Fixed parameters, monthly expanding refits, identical paired samples, daily 00 UTC origins; revised demand with assumed 24h delay.",
+  "weather_availability": "Initialization + 12h assumed; actual historical publication timestamps unavailable.",
+  "limitations": "April 2026 onward archive; no winter test. One Charlotte weather point. Live hourly origins differ from daily test origins.",
+  "start": "2026-07-01T00:00:00Z",
+  "end_exclusive": "2026-10-17T00:00:00Z",
+  "parameters": {
+    "max_iter": 200,
+    "max_leaf_nodes": 15,
+    "learning_rate": 0.05,
+    "l2_regularization": 10,
+    "early_stopping": false,
+    "random_state": 42
+  },
+  "folds": [
+    {
+      "start": "2026-07-01T00:00:00Z",
+      "end_exclusive": "2026-08-01T00:00:00Z",
+      "training_cutoff_exclusive": "2026-06-30T00:00:00Z",
+      "training_rows": 2112,
+      "test_rows": 744
+    },
+    {
+      "start": "2026-08-01T00:00:00Z",
+      "end_exclusive": "2026-09-01T00:00:00Z",
+      "training_cutoff_exclusive": "2026-07-31T00:00:00Z",
+      "training_rows": 2856,
+      "test_rows": 744
+    },
+    {
+      "start": "2026-09-01T00:00:00Z",
+      "end_exclusive": "2026-10-01T00:00:00Z",
+      "training_cutoff_exclusive": "2026-08-31T00:00:00Z",
+      "training_rows": 3600,
+      "test_rows": 720
+    },
+    {
+      "start": "2026-10-01T00:00:00Z",
+      "end_exclusive": "2026-10-17T00:00:00Z",
+      "training_cutoff_exclusive": "2026-09-30T00:00:00Z",
+      "training_rows": 4320,
+      "test_rows": 384
+    }
+  ],
+  "skipped_test_days": 0,
+  "weather_input_sha256": {
+    "data\\weather-vintages\\weather_vintages.csv": "077b802571db5b04e7636bccfeaa855200740c5ff17a0e3f722eb3ded5da1e0c"
+  },
+  "demand_input_sha256": {
+    "data\\processed\\demand\\DUK\\2026-01-01_2026-10-16.csv": "1604a4c853c0d0891685b8e89520b44bd005878c6afc1462defe979e1c3d6445"
+  },
+  "overall": {
+    "demand_only": {
+      "hours": 2592,
+      "mae_mw": 1522.089140762097,
+      "rmse_mw": 1982.3427445150007,
+      "wape_percent": 10.752767296800842
+    },
+    "weather_vintage": {
+      "hours": 2592,
+      "mae_mw": 787.0536111561722,
+      "rmse_mw": 1057.3687251128406,
+      "wape_percent": 5.5601239797504505
+    }
+  },
+  "by_month": {
+    "2026-07": {
+      "demand_only": {
+        "hours": 744,
+        "mae_mw": 2101.9065384228347,
+        "rmse_mw": 2583.8437910035955,
+        "wape_percent": 13.726645006244322
+      },
+      "weather_vintage": {
+        "hours": 744,
+        "mae_mw": 1070.1957376237474,
+        "rmse_mw": 1392.8482310006045,
+        "wape_percent": 6.98898676464452
+      }
+    },
+    "2026-08": {
+      "demand_only": {
+        "hours": 744,
+        "mae_mw": 1348.0927778365335,
+        "rmse_mw": 1713.251538683165,
+        "wape_percent": 9.1134145158303
+      },
+      "weather_vintage": {
+        "hours": 744,
+        "mae_mw": 626.4561325431472,
+        "rmse_mw": 818.1176207100314,
+        "wape_percent": 4.234986275211621
+      }
+    },
+    "2026-09": {
+      "demand_only": {
+        "hours": 720,
+        "mae_mw": 1341.0962713751112,
+        "rmse_mw": 1782.502581298435,
+        "wape_percent": 9.829078569573108
+      },
+      "weather_vintage": {
+        "hours": 720,
+        "mae_mw": 735.7894651724771,
+        "rmse_mw": 978.9108707088725,
+        "wape_percent": 5.3927019396071305
+      }
+    },
+    "2026-10": {
+      "demand_only": {
+        "hours": 384,
+        "mae_mw": 1075.1725160632955,
+        "rmse_mw": 1394.8657518861628,
+        "wape_percent": 9.239115876316534
+      },
+      "weather_vintage": {
+        "hours": 384,
+        "mae_mw": 645.7436296574093,
+        "rmse_mw": 833.2719601906259,
+        "wape_percent": 5.548970171449965
+      }
+    }
+  },
+  "backfill": {
+    "rows": 4728,
+    "runs": 197,
+    "start": "2026-04-03",
+    "end_inclusive": "2026-10-16"
+  },
+  "demand_provenance": {
+    "source": "https://www.eia.gov/electricity/gridmonitor/knownissues/xls/DUK.xlsx",
+    "column": "Demand (published, not imputed or adjusted)",
+    "hours": 6936,
+    "raw_sha256": "e82c1086e617e304a50bfc7f8d11a0b8e6d3b68fece9d075c8c49bdccaadc444"
+  },
+  "validation": {
+    "tests_passed": 29,
+    "docker_training_rows": 4704,
+    "docker_offline_forecast_rows": 24,
+    "docker_evaluation_matches_local": true,
+    "model_sha256": "d90bbe5fc27ad24ca966b0b92b33effb5b06f1ddbaf5ab541de6f1d9eb281dd5",
+    "forecast_file": "data\\forecasts\\weather\\forecast_20261017T212714-76b2c60ccb60.csv",
+    "forecast_first_utc": "2026-10-17T22:00:00Z",
+    "forecast_last_utc": "2026-10-18T21:00:00Z"
+  }
+}

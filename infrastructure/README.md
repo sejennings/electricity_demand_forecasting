@@ -6,6 +6,11 @@ the `default` AWS CLI profile. No web server or always-running container is need
 EventBridge Scheduler → Step Functions Standard → parallel demand/weather Lambda tasks
 → validation and hourly demand/weather join → curated S3 CSV partitions.
 
+The workflow also publishes Parquet during curation and then runs an Operational task
+to archive current weather forecasts and recent EIA demand. Recent actual demand updates
+the demand Parquet table independently of the historical weather lag. See
+[operational modeling](../docs/operational-model.md) for source timing and Docker commands.
+
 ## Data layout and behavior
 
 - `raw/<source>/region=DUK/year=.../month=.../day=.../run=<execution>/`: source JSON.

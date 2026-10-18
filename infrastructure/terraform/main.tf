@@ -81,6 +81,12 @@ resource "aws_s3_bucket_lifecycle_configuration" "lake" {
     filter { prefix = "athena-results/" }
     expiration { days = 7 }
   }
+  rule {
+    id     = "bound-large-operational-exports"
+    status = "Enabled"
+    filter { prefix = "raw/operational-export/" }
+    expiration { days = 30 }
+  }
 }
 resource "aws_secretsmanager_secret" "eia" {
   name                    = "gridcast/eia-api-key"
@@ -181,7 +187,13 @@ resource "aws_sfn_state_machine" "ingestion" {
       Type       = "Task", Resource = "arn:aws:states:::lambda:invoke", TimeoutSeconds = 650,
       Parameters = { FunctionName = aws_lambda_function.ingestion.arn, Payload = { action = "curate", "run_id.$" = "$$.Execution.Name", "days.$" = "$.days", "end_date.$" = "$.end_date" } },
       Retry      = [{ ErrorEquals = ["Lambda.ServiceException", "Lambda.SdkClientException", "Lambda.TooManyRequestsException"], IntervalSeconds = 5, MaxAttempts = 2, BackoffRate = 2 }],
-      OutputPath = "$.Payload", End = true
+      OutputPath = "$.Payload", Next = "Operational"
+    },
+    Operational = {
+      Type           = "Task", Resource = "arn:aws:states:::lambda:invoke", TimeoutSeconds = 650,
+      Parameters     = { FunctionName = aws_lambda_function.ingestion.arn, Payload = { action = "operational" } },
+      Retry          = [{ ErrorEquals = ["Lambda.ServiceException", "Lambda.SdkClientException", "Lambda.TooManyRequestsException"], IntervalSeconds = 5, MaxAttempts = 2, BackoffRate = 2 }],
+      ResultSelector = { "snapshot.$" = "$.Payload" }, ResultPath = "$.operational", End = true
     }
   } })
   depends_on = [aws_iam_role_policy.workflow]

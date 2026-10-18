@@ -109,6 +109,24 @@ def curate(event, s3):
 def handler(event, context):
     import boto3
     s3 = boto3.client('s3')
+    if event.get('action') == 'operational':
+        from gridcast.live import collect,upload
+        secrets = boto3.client('secretsmanager')
+        key = secrets.get_secret_value(SecretId=os.environ['EIA_SECRET_ARN'])['SecretString']
+        with tempfile.TemporaryDirectory() as temporary:
+            root,manifest = collect(key,Path(temporary))
+            manifest_key = upload(s3,os.environ['LAKE_BUCKET'],root,manifest)
+            from gridcast.analytics import publish
+            with (root/'demand.csv').open(newline='',encoding='utf-8') as stream:
+                demand=[]
+                for row in csv.DictReader(stream):
+                    if row['demand_mw']:
+                        row['demand_mw']=float(row['demand_mw'])
+                        demand.append(row)
+            publish(s3,os.environ['LAKE_BUCKET'],demand,[],[])
+        return {'snapshot_id':manifest['snapshot_id'],'manifest_key':manifest_key,
+                'latest_observation_utc':manifest['demand']['latest_observation_utc'],
+                'weather_rows':manifest['weather_rows']}
     if event.get('action') == 'curate':
         return curate(event, s3)
     return ingest(event, s3, boto3.client('secretsmanager'))

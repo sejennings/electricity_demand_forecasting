@@ -17,19 +17,19 @@ WEATHER_URL = "https://archive-api.open-meteo.com/v1/archive"
 VARIABLES = ["temperature_2m", "relative_humidity_2m", "precipitation", "wind_speed_10m"]
 
 
-def request_json(url, params):
-    for attempt in range(5):
+def request_json(url, params, *, timeout=90, attempts=5):
+    for attempt in range(attempts):
         try:
-            with urlopen(url + "?" + urlencode(params), timeout=90) as response:
+            with urlopen(url + "?" + urlencode(params), timeout=timeout) as response:
                 payload = json.load(response)
             if payload.get("error"):
                 raise ValueError("Source API returned an error; check configuration")
             return payload
         except HTTPError as exc:
-            if exc.code not in (429, 500, 502, 503, 504) or attempt == 4:
+            if exc.code not in (429, 500, 502, 503, 504) or attempt == attempts - 1:
                 raise RuntimeError(f"Source request failed (HTTP {exc.code})") from None
         except (URLError, TimeoutError):
-            if attempt == 4:
+            if attempt == attempts - 1:
                 raise RuntimeError("Source request failed after retries") from None
         time.sleep(2 ** attempt)
 
@@ -41,10 +41,10 @@ def write_json(path, payload):
     temporary.replace(path)
 
 
-def cached_request(path, url, params, refresh=False):
+def cached_request(path, url, params, refresh=False, request_options=None):
     if path.exists() and not refresh:
         return json.loads(path.read_text(encoding="utf-8"))
-    payload = request_json(url, params)
+    payload = request_json(url, params, **(request_options or {}))
     # EIA echoes the API key in its request metadata. Never persist that section.
     payload.pop("request", None)
     write_json(path, payload)
