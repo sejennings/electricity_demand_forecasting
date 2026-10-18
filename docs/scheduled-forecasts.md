@@ -27,6 +27,9 @@ and operational/forecast/score prefixes; it can write operational snapshots,
 forecasts and scores. It cannot overwrite the model. Its only secret access is
 the existing EIA secret. A separate execution role handles ECR pulls and logs.
 No local AWS credentials, model or datasets are embedded in the image.
+If both EIA API requests time out, collection can use the official published
+workbook alone. The manifest labels that source explicitly, reports the latest
+observed hour and missing hours, and does not fabricate API updates.
 
 Each task downloads and verifies the model before loading it, collects fresh
 inputs and records actual issuance after input retrieval. The scheduled trigger

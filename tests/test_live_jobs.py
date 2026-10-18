@@ -18,6 +18,15 @@ class Predictor:
 
 
 class LiveTests(unittest.TestCase):
+    def test_export_survives_unavailable_latest_hour_api(self):
+        exported=[dict(timestamp_utc='2025-01-02T10:00:00Z',region='DUK',demand_mw=100)]
+        with patch('gridcast.live.cached_request',side_effect=RuntimeError('API timeout')), \
+             patch('gridcast.eia_export.download'),patch('gridcast.eia_export.read_rows',return_value=exported):
+            rows,report=recent_demand('not-a-real-key',Path('unused'),datetime(2025,1,2,12,34,tzinfo=timezone.utc))
+        self.assertEqual(len(rows),1)
+        self.assertEqual(report['latest_observation_utc'],'2025-01-02T10:00:00Z')
+        self.assertEqual(report['retrieval_source'],'eia-published-hourly-export')
+        self.assertIn('latest-hour API unavailable',report['fallback_reason'])
     def test_export_fallback_keeps_observed_values_and_applies_latest_revision(self):
         latest={'period':'2025-01-02T11','respondent':'DUK','type':'D','value':'110','value-units':'megawatthours'}
         exported=[dict(timestamp_utc='2025-01-02T10:00:00Z',region='DUK',demand_mw=100),

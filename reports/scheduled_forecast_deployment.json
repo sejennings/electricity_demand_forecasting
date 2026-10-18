@@ -1,0 +1,107 @@
+{
+  "verified_at_utc": "2026-10-18T23:06:06.875108+00:00",
+  "region": "us-east-2",
+  "profile": "default",
+  "tests_passed": 34,
+  "terraform_validated": true,
+  "execution_arn": "arn:aws:states:us-east-2:456112636403:execution:gridcast-forecast:manual-forecast-20261018-01",
+  "execution_status": "SUCCEEDED",
+  "task_arn": "arn:aws:ecs:us-east-2:456112636403:task/gridcast/1378611ad0314cf6bff2f42150da0b4f",
+  "container_exit_code": 0,
+  "task_definition": "arn:aws:ecs:us-east-2:456112636403:task-definition/gridcast-forecast:2",
+  "image_uri": "456112636403.dkr.ecr.us-east-2.amazonaws.com/gridcast-model@sha256:5c2b2e6284ec5650e6b44c86ed201a87eb697fb95ded7f6d04cba71921b4d8f7",
+  "model_sha256": "d90bbe5fc27ad24ca966b0b92b33effb5b06f1ddbaf5ab541de6f1d9eb281dd5",
+  "forecast_manifest_key": "forecasts/runs/manual-forecast-20261018-01/manifest.json",
+  "forecast_issue_utc": "2026-10-18T22:41:34.696741Z",
+  "forecast_rows": 24,
+  "forecast_unchanged_after_scoring": true,
+  "scores": [
+    {
+      "forecast_id": "manual-forecast-20261018-01",
+      "issue_time_utc": "2026-10-18T22:41:34.696741Z",
+      "status": "pending",
+      "scored_hours": 0,
+      "pending_hours": 24,
+      "metrics": {
+        "hours": 0,
+        "mae_mw": null,
+        "rmse_mw": null,
+        "wape_percent": null
+      }
+    },
+    {
+      "forecast_id": "local-20261017T212714-76b2c60ccb60",
+      "issue_time_utc": "2026-10-17T21:27:14.185587Z",
+      "status": "partial",
+      "scored_hours": 16,
+      "pending_hours": 8,
+      "metrics": {
+        "hours": 16,
+        "mae_mw": 706.2258624640306,
+        "rmse_mw": 778.9175964860534,
+        "wape_percent": 7.396584231923235
+      }
+    }
+  ],
+  "ingestion_hook": {
+    "latest_observation_utc": "2026-10-18T13:00:00Z",
+    "snapshot_id": "20261018T230303-d75552592000",
+    "scores": [
+      {
+        "forecast_id": "local-20261017T212714-76b2c60ccb60",
+        "status": "partial",
+        "scored_hours": 16,
+        "score_key": "scores/runs/local-20261017T212714-76b2c60ccb60/revisions/2275ea096e3bc36e0edf3032349d723d800c325eda88f86d20e3018469e0b435.json"
+      },
+      {
+        "forecast_id": "manual-forecast-20261018-01",
+        "status": "pending",
+        "scored_hours": 0,
+        "score_key": "scores/runs/manual-forecast-20261018-01/revisions/3efb1d79b130ebbbeb88db2298a2270951199e08dc96bfd6e7a247768a57eb6e.json"
+      }
+    ]
+  },
+  "schedule": {
+    "state": "ENABLED",
+    "expression": "cron(30 14 * * ? *)",
+    "timezone": "UTC"
+  },
+  "image_scan": {
+    "status": "COMPLETE",
+    "counts": {
+      "HIGH": 7,
+      "MEDIUM": 4,
+      "LOW": 2
+    },
+    "open_high_findings": [
+      "CVE-2026-78408",
+      "CVE-2026-78409",
+      "CVE-2026-53613",
+      "CVE-2026-53615",
+      "CVE-2026-78410",
+      "CVE-2026-76642",
+      "CVE-2026-85091"
+    ]
+  },
+  "final_release": {
+    "execution_arn": "arn:aws:states:us-east-2:456112636403:execution:gridcast-forecast:manual-forecast-20261018-02",
+    "status": "SUCCEEDED",
+    "task_arn": "arn:aws:ecs:us-east-2:456112636403:task/gridcast/bd571ed023e74814b95ae3ab6c87d43e",
+    "task_definition": "arn:aws:ecs:us-east-2:456112636403:task-definition/gridcast-forecast:3",
+    "exit_code": 0,
+    "image_uri": "456112636403.dkr.ecr.us-east-2.amazonaws.com/gridcast-model@sha256:d58149e8e8a6b831ee20233d13710413963c211d3572e6429d2a302a47f23876",
+    "forecast_issue_utc": "2026-10-18T23:05:37.735208Z",
+    "forecast_rows": 24,
+    "forecast_manifest_key": "forecasts/runs/manual-forecast-20261018-02/manifest.json",
+    "fallback_fix_deployed": true,
+    "terraform_no_drift": true,
+    "image_scan": {
+      "status": "COMPLETE",
+      "counts": {
+        "HIGH": 7,
+        "MEDIUM": 4,
+        "LOW": 2
+      }
+    }
+  }
+}

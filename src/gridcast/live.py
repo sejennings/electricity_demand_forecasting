@@ -33,14 +33,20 @@ def recent_demand(key, root, as_of):
         payload={'data':[dict(period=r['timestamp_utc'],respondent='DUK',type='D',
                               value=r['demand_mw'],**{'value-units':'megawatthours'}) for r in exported]}
         latest_params={**params,'length':1}
-        latest=cached_request(root/'raw/demand_latest.json',EIA_URL,latest_params,
-                              request_options={'timeout':15,'attempts':2})['response']['data']
+        try:
+            latest=cached_request(root/'raw/demand_latest.json',EIA_URL,latest_params,
+                                  request_options={'timeout':15,'attempts':2})['response']['data']
+        except RuntimeError:
+            # The official workbook is independently published actual demand.
+            # A second API outage must not discard that valid source; gaps stay visible.
+            latest=[]
+            fallback_reason += '; latest-hour API unavailable; using published export only'
         # The API's latest observed hour supplements the official export; it does not
         # fill any unavailable hours between the export and API publication times.
         by_time={timestamp(r['period']):r for r in payload['data']}
         by_time.update({timestamp(r['period']):r for r in latest})
         payload['data']=list(by_time.values())
-        source='eia-published-hourly-export-plus-latest-api'
+        source='eia-published-hourly-export-plus-latest-api' if latest else 'eia-published-hourly-export'
     # A bounded reverse scan avoids a slow EIA date-range query. Total describes all
     # history, so intentional truncation is expected. Enforce the as-of window locally.
     if len(payload['data']) > 1000:

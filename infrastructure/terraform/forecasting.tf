@@ -119,7 +119,8 @@ resource "aws_ecs_task_definition" "forecast" {
     entryPoint             = ["python", "-m", "gridcast.daily"], command = [], user = "10001:10001",
     readonlyRootFilesystem = true,
     mountPoints            = [{ sourceVolume = "scratch", containerPath = "/tmp", readOnly = false }],
-    linuxParameters        = { capabilities = { drop = ["ALL"] } },
+    linuxParameters        = { capabilities = { add = [], drop = ["ALL"] } },
+    volumesFrom            = [], systemControls = [], portMappings = [],
     environment            = [for k, v in { AWS_DEFAULT_REGION = "us-east-2", LAKE_BUCKET = aws_s3_bucket.lake.id, EIA_SECRET_ARN = aws_secretsmanager_secret.eia.arn, MODEL_KEY = local.model_key, MODEL_SHA256 = var.forecast_model_sha256, MODEL_IMAGE_URI = local.forecast_image } : { name = k, value = v }],
     logConfiguration       = { logDriver = "awslogs", options = { awslogs-group = aws_cloudwatch_log_group.forecast.name, awslogs-region = "us-east-2", awslogs-stream-prefix = "forecast" } }
   }])
