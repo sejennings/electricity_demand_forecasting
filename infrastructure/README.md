@@ -44,7 +44,7 @@ Additional Info → Region (`us-east-2`). Run from the repository root:
 ```powershell
 python -m pip install -e ".[aws,model,analytics]"
 python scripts/build_arrow_layer.py
-terraform -chdir=infrastructure/terraform init
+terraform -chdir=infrastructure/terraform init -backend-config=backend.hcl
 # This local file is ignored by Git:
 'alert_email = "you@example.com"' | Set-Content infrastructure/terraform/terraform.tfvars
 terraform -chdir=infrastructure/terraform plan -out=deploy.tfplan
@@ -117,6 +117,9 @@ Lambda actions, and adds runtime log-write permissions. Regenerate the baseline 
 uvx --python .venv/Scripts/python.exe iam-policy-autopilot@latest generate-policies src/gridcast/cloud.py src/gridcast/analytics.py --region us-east-2 --account <project_aws_id> --service-hints s3 secretsmanager --pretty
 ```
 # Daily Fargate forecasting
+
+See [GitHub Actions deployment](../docs/github-actions-deployment.md) for the shared
+state backend, bootstrap resources, CI checks and current AWS OIDC prerequisite.
 
 `forecasting.tf` adds the ECR repository, task roles, dedicated subnet, Fargate
 task, Step Functions completion monitoring and daily forecast schedule. See

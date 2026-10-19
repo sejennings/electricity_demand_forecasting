@@ -8,21 +8,23 @@ terraform {
 }
 
 provider "aws" {
-  region  = "us-east-2"
-  profile = var.aws_profile
+  region              = "us-east-2"
+  profile             = var.aws_profile
+  allowed_account_ids = ["456112636403"]
   default_tags {
     tags = { Project = "GridCast", ManagedBy = "Terraform" }
   }
 }
 # Budgets is a global billing API; this provider creates no regional infrastructure.
 provider "aws" {
-  alias   = "billing"
-  region  = "us-east-1"
-  profile = var.aws_profile
+  alias               = "billing"
+  region              = "us-east-1"
+  profile             = var.aws_profile
+  allowed_account_ids = ["456112636403"]
 }
 variable "aws_profile" {
-  type = string
-  default = null
+  type        = string
+  default     = null
   description = "Optional local CLI profile; CI uses OIDC environment credentials."
 }
 variable "alert_email" { type = string }

@@ -214,3 +214,7 @@ commands, snapshot timing, training cutoffs and limitations. Validation evidence
 Daily Fargate forecasting and delayed actual-demand scoring are configured with
 Terraform. See [scheduled forecasts](docs/scheduled-forecasts.md) for the 14:30 UTC
 schedule, immutable issue records, score revisions, operations and open image findings.
+
+GitHub Actions runs credential-free checks and provides a guarded Terraform/ECR
+deployment workflow using shared S3 state and OIDC. AWS deployment is disabled
+pending the managed IAM-provider restriction; see [CI/CD setup](docs/github-actions-deployment.md).

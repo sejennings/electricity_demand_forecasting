@@ -32,7 +32,7 @@ jobs:
       contents: read
       id-token: write
     env:
-      TF_VAR_alert_email: ${{ vars.GRIDCAST_ALERT_EMAIL }}
+      TF_VAR_alert_email: ${{ secrets.GRIDCAST_ALERT_EMAIL }}
       TF_VAR_forecast_model_sha256: ${{ vars.FORECAST_MODEL_SHA256 }}
       TF_VAR_schedule_enabled: 'true'
       TF_VAR_forecast_schedule_enabled: 'true'
