@@ -96,6 +96,15 @@ timeout is five minutes. A failed smoke test fails the job and does not trigger 
 automatic rollback. Recover by deploying reviewed known-good code/image changes;
 an older model image alone does not roll back Lambda or infrastructure changes.
 
+## Cost controls
+
+The operating target is $10/month before promotional credits. The
+[October cost audit](cost-audit-2026-10-18.md) estimates normal and stress usage
+and distinguishes enforced controls from planning allowances. Deployment checks
+limit monthly attempts, ECR image growth and the audited Terraform footprint.
+They are not a guaranteed billing cap. Automatic deployment remains desired;
+the current AWS OIDC policy restriction must be resolved before enabling it.
+
 ## Policy provenance
 
 The committed policy JSON combines IAM Policy Autopilot analysis of a real

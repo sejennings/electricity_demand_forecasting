@@ -6,6 +6,7 @@ import json
 import os
 from pathlib import Path
 import re
+import signal
 import tempfile
 import boto3
 from botocore.config import Config
@@ -51,6 +52,9 @@ def run(s3,secrets,bucket,model_key,model_hash,run_id):
 
 
 def main():
+    # Linux terminates the container even if workflow cancellation cannot stop it.
+    if hasattr(signal, 'SIGALRM'):
+        signal.alarm(1200)
     session=boto3.Session(region_name='us-east-2')
     config=Config(retries={'mode':'standard','total_max_attempts':4},connect_timeout=10,read_timeout=60)
     run(session.client('s3',config=config),session.client('secretsmanager',config=config),

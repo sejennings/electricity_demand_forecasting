@@ -1,0 +1,354 @@
+{
+  "monthly_target_usd": 10,
+  "max_deployment_attempts_per_month": 10,
+  "max_ecr_bytes": 5368709120,
+  "max_image_bytes": 1073741824,
+  "resources": {
+    "aws_athena_named_query.reports[\"daily_peaks.sql\"]": {
+      "type": "aws_athena_named_query",
+      "limits": {}
+    },
+    "aws_athena_named_query.reports[\"missing_hours.sql\"]": {
+      "type": "aws_athena_named_query",
+      "limits": {}
+    },
+    "aws_athena_named_query.reports[\"seasonality.sql\"]": {
+      "type": "aws_athena_named_query",
+      "limits": {}
+    },
+    "aws_athena_named_query.reports[\"validation.sql\"]": {
+      "type": "aws_athena_named_query",
+      "limits": {}
+    },
+    "aws_athena_named_query.reports[\"weather_relationships.sql\"]": {
+      "type": "aws_athena_named_query",
+      "limits": {}
+    },
+    "aws_athena_workgroup.gridcast": {
+      "type": "aws_athena_workgroup",
+      "limits": {
+        "bytes_scanned_cutoff_per_query": 104857600
+      }
+    },
+    "aws_budgets_budget.monthly": {
+      "type": "aws_budgets_budget",
+      "limits": {
+        "limit_amount": "5",
+        "time_unit": "MONTHLY"
+      }
+    },
+    "aws_cloudwatch_log_group.forecast": {
+      "type": "aws_cloudwatch_log_group",
+      "limits": {
+        "retention_in_days": 14
+      }
+    },
+    "aws_cloudwatch_log_group.lambda": {
+      "type": "aws_cloudwatch_log_group",
+      "limits": {
+        "retention_in_days": 14
+      }
+    },
+    "aws_cloudwatch_log_group.workflow": {
+      "type": "aws_cloudwatch_log_group",
+      "limits": {
+        "retention_in_days": 14
+      }
+    },
+    "aws_cloudwatch_metric_alarm.dlq": {
+      "type": "aws_cloudwatch_metric_alarm",
+      "limits": {}
+    },
+    "aws_cloudwatch_metric_alarm.failed": {
+      "type": "aws_cloudwatch_metric_alarm",
+      "limits": {}
+    },
+    "aws_cloudwatch_metric_alarm.forecast_failure[\"ExecutionsFailed\"]": {
+      "type": "aws_cloudwatch_metric_alarm",
+      "limits": {}
+    },
+    "aws_cloudwatch_metric_alarm.forecast_failure[\"ExecutionsTimedOut\"]": {
+      "type": "aws_cloudwatch_metric_alarm",
+      "limits": {}
+    },
+    "aws_cloudwatch_metric_alarm.timed_out": {
+      "type": "aws_cloudwatch_metric_alarm",
+      "limits": {}
+    },
+    "aws_ecr_lifecycle_policy.model": {
+      "type": "aws_ecr_lifecycle_policy",
+      "limits": {}
+    },
+    "aws_ecr_repository.model": {
+      "type": "aws_ecr_repository",
+      "limits": {}
+    },
+    "aws_ecs_cluster.forecast": {
+      "type": "aws_ecs_cluster",
+      "limits": {}
+    },
+    "aws_ecs_task_definition.forecast": {
+      "type": "aws_ecs_task_definition",
+      "limits": {
+        "cpu": "512",
+        "memory": "2048"
+      }
+    },
+    "aws_glue_catalog_database.gridcast": {
+      "type": "aws_glue_catalog_database",
+      "limits": {}
+    },
+    "aws_glue_catalog_table.dimensions[\"dim_calendar\"]": {
+      "type": "aws_glue_catalog_table",
+      "limits": {}
+    },
+    "aws_glue_catalog_table.dimensions[\"dim_region\"]": {
+      "type": "aws_glue_catalog_table",
+      "limits": {}
+    },
+    "aws_glue_catalog_table.hourly[\"hourly_demand\"]": {
+      "type": "aws_glue_catalog_table",
+      "limits": {}
+    },
+    "aws_glue_catalog_table.hourly[\"hourly_demand_weather\"]": {
+      "type": "aws_glue_catalog_table",
+      "limits": {}
+    },
+    "aws_glue_catalog_table.hourly[\"hourly_weather\"]": {
+      "type": "aws_glue_catalog_table",
+      "limits": {}
+    },
+    "aws_iam_role.forecast_execution": {
+      "type": "aws_iam_role",
+      "limits": {}
+    },
+    "aws_iam_role.forecast_task": {
+      "type": "aws_iam_role",
+      "limits": {}
+    },
+    "aws_iam_role.forecast_workflow": {
+      "type": "aws_iam_role",
+      "limits": {}
+    },
+    "aws_iam_role.lambda": {
+      "type": "aws_iam_role",
+      "limits": {}
+    },
+    "aws_iam_role.scheduler": {
+      "type": "aws_iam_role",
+      "limits": {}
+    },
+    "aws_iam_role.workflow": {
+      "type": "aws_iam_role",
+      "limits": {}
+    },
+    "aws_iam_role_policy.forecast_execution": {
+      "type": "aws_iam_role_policy",
+      "limits": {}
+    },
+    "aws_iam_role_policy.forecast_task": {
+      "type": "aws_iam_role_policy",
+      "limits": {}
+    },
+    "aws_iam_role_policy.forecast_workflow": {
+      "type": "aws_iam_role_policy",
+      "limits": {}
+    },
+    "aws_iam_role_policy.lambda": {
+      "type": "aws_iam_role_policy",
+      "limits": {}
+    },
+    "aws_iam_role_policy.scheduler": {
+      "type": "aws_iam_role_policy",
+      "limits": {}
+    },
+    "aws_iam_role_policy.workflow": {
+      "type": "aws_iam_role_policy",
+      "limits": {}
+    },
+    "aws_internet_gateway.forecast": {
+      "type": "aws_internet_gateway",
+      "limits": {}
+    },
+    "aws_lambda_function.ingestion": {
+      "type": "aws_lambda_function",
+      "limits": {
+        "memory_size": 512,
+        "timeout": 600
+      }
+    },
+    "aws_lambda_layer_version.arrow": {
+      "type": "aws_lambda_layer_version",
+      "limits": {}
+    },
+    "aws_route_table.forecast": {
+      "type": "aws_route_table",
+      "limits": {}
+    },
+    "aws_route_table_association.forecast": {
+      "type": "aws_route_table_association",
+      "limits": {}
+    },
+    "aws_s3_bucket.lake": {
+      "type": "aws_s3_bucket",
+      "limits": {}
+    },
+    "aws_s3_bucket_lifecycle_configuration.lake": {
+      "type": "aws_s3_bucket_lifecycle_configuration",
+      "limits": {}
+    },
+    "aws_s3_bucket_ownership_controls.lake": {
+      "type": "aws_s3_bucket_ownership_controls",
+      "limits": {}
+    },
+    "aws_s3_bucket_policy.lake": {
+      "type": "aws_s3_bucket_policy",
+      "limits": {}
+    },
+    "aws_s3_bucket_public_access_block.lake": {
+      "type": "aws_s3_bucket_public_access_block",
+      "limits": {}
+    },
+    "aws_s3_bucket_server_side_encryption_configuration.lake": {
+      "type": "aws_s3_bucket_server_side_encryption_configuration",
+      "limits": {}
+    },
+    "aws_s3_bucket_versioning.lake": {
+      "type": "aws_s3_bucket_versioning",
+      "limits": {}
+    },
+    "aws_s3_object.arrow_layer": {
+      "type": "aws_s3_object",
+      "limits": {}
+    },
+    "aws_scheduler_schedule.daily": {
+      "type": "aws_scheduler_schedule",
+      "limits": {
+        "schedule_expression": "cron(0 14 * * ? *)",
+        "schedule_expression_timezone": "UTC"
+      }
+    },
+    "aws_scheduler_schedule.forecast": {
+      "type": "aws_scheduler_schedule",
+      "limits": {
+        "schedule_expression": "cron(30 14 * * ? *)",
+        "schedule_expression_timezone": "UTC"
+      }
+    },
+    "aws_scheduler_schedule_group.gridcast": {
+      "type": "aws_scheduler_schedule_group",
+      "limits": {}
+    },
+    "aws_secretsmanager_secret.eia": {
+      "type": "aws_secretsmanager_secret",
+      "limits": {}
+    },
+    "aws_security_group.forecast": {
+      "type": "aws_security_group",
+      "limits": {}
+    },
+    "aws_sfn_state_machine.forecast": {
+      "type": "aws_sfn_state_machine",
+      "limits": {},
+      "workflow_limits": {
+        "timeout": 1500,
+        "states": {
+          "CheckExit": {
+            "Type": "Choice"
+          },
+          "Done": {
+            "Type": "Succeed"
+          },
+          "Failed": {
+            "Type": "Fail"
+          },
+          "Forecast": {
+            "Type": "Task",
+            "Resource": "arn:aws:states:::ecs:runTask.sync",
+            "TimeoutSeconds": 1200,
+            "Retry": [
+              {
+                "BackoffRate": 2,
+                "ErrorEquals": [
+                  "States.TaskFailed"
+                ],
+                "IntervalSeconds": 30,
+                "MaxAttempts": 1
+              }
+            ]
+          }
+        }
+      }
+    },
+    "aws_sfn_state_machine.ingestion": {
+      "type": "aws_sfn_state_machine",
+      "limits": {},
+      "workflow_limits": {
+        "timeout": 1800,
+        "states": {
+          "Curate": {
+            "Type": "Task",
+            "Resource": "arn:aws:states:::lambda:invoke",
+            "TimeoutSeconds": 650,
+            "Retry": [
+              {
+                "BackoffRate": 2,
+                "ErrorEquals": [
+                  "Lambda.ServiceException",
+                  "Lambda.SdkClientException",
+                  "Lambda.TooManyRequestsException"
+                ],
+                "IntervalSeconds": 5,
+                "MaxAttempts": 2
+              }
+            ]
+          },
+          "Fetch": {
+            "Type": "Parallel"
+          },
+          "Operational": {
+            "Type": "Task",
+            "Resource": "arn:aws:states:::lambda:invoke",
+            "TimeoutSeconds": 650,
+            "Retry": [
+              {
+                "BackoffRate": 2,
+                "ErrorEquals": [
+                  "Lambda.ServiceException",
+                  "Lambda.SdkClientException",
+                  "Lambda.TooManyRequestsException"
+                ],
+                "IntervalSeconds": 5,
+                "MaxAttempts": 2
+              }
+            ]
+          }
+        }
+      }
+    },
+    "aws_sns_topic.alerts": {
+      "type": "aws_sns_topic",
+      "limits": {}
+    },
+    "aws_sns_topic_policy.alerts": {
+      "type": "aws_sns_topic_policy",
+      "limits": {}
+    },
+    "aws_sns_topic_subscription.email": {
+      "type": "aws_sns_topic_subscription",
+      "limits": {}
+    },
+    "aws_sqs_queue.scheduler_dlq": {
+      "type": "aws_sqs_queue",
+      "limits": {}
+    },
+    "aws_subnet.forecast": {
+      "type": "aws_subnet",
+      "limits": {}
+    },
+    "aws_vpc.forecast": {
+      "type": "aws_vpc",
+      "limits": {}
+    }
+  }
+}
