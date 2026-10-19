@@ -15,9 +15,13 @@ def main():
     wheel = next(wheels.glob('pyarrow-26.0.0-cp312-cp312-manylinux_2_28_aarch64.whl'))
     output = root / 'pyarrow-layer.zip'
     with zipfile.ZipFile(wheel) as source, zipfile.ZipFile(output,'w',zipfile.ZIP_DEFLATED) as target:
-        for name in source.namelist():
+        for name in sorted(source.namelist()):
             if not name.endswith('/'):
-                target.writestr('python/' + name, source.read(name))
+                info = zipfile.ZipInfo('python/' + name, date_time=(1980,1,1,0,0,0))
+                info.create_system = 3
+                info.external_attr = 0o100644 << 16
+                info.compress_type = zipfile.ZIP_DEFLATED
+                target.writestr(info, source.read(name))
     print(f'Built {output} ({output.stat().st_size} bytes)')
 
 

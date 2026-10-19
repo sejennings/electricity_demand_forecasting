@@ -1,5 +1,6 @@
 terraform {
-  required_version = ">= 1.6"
+  required_version = ">= 1.10"
+  backend "s3" {}
   required_providers {
     aws     = { source = "hashicorp/aws", version = "~> 6.0" }
     archive = { source = "hashicorp/archive", version = "~> 2.0" }
@@ -8,7 +9,7 @@ terraform {
 
 provider "aws" {
   region  = "us-east-2"
-  profile = "default"
+  profile = var.aws_profile
   default_tags {
     tags = { Project = "GridCast", ManagedBy = "Terraform" }
   }
@@ -17,7 +18,12 @@ provider "aws" {
 provider "aws" {
   alias   = "billing"
   region  = "us-east-1"
-  profile = "default"
+  profile = var.aws_profile
+}
+variable "aws_profile" {
+  type = string
+  default = null
+  description = "Optional local CLI profile; CI uses OIDC environment credentials."
 }
 variable "alert_email" { type = string }
 variable "schedule_enabled" {
