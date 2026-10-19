@@ -1,5 +1,6 @@
 terraform {
-  required_version = ">= 1.6"
+  required_version = ">= 1.10"
+  backend "s3" {}
   required_providers {
     aws     = { source = "hashicorp/aws", version = "~> 6.0" }
     archive = { source = "hashicorp/archive", version = "~> 2.0" }
@@ -7,17 +8,24 @@ terraform {
 }
 
 provider "aws" {
-  region  = "us-east-2"
-  profile = "default"
+  region              = "us-east-2"
+  profile             = var.aws_profile
+  allowed_account_ids = ["456112636403"]
   default_tags {
     tags = { Project = "GridCast", ManagedBy = "Terraform" }
   }
 }
 # Budgets is a global billing API; this provider creates no regional infrastructure.
 provider "aws" {
-  alias   = "billing"
-  region  = "us-east-1"
-  profile = "default"
+  alias               = "billing"
+  region              = "us-east-1"
+  profile             = var.aws_profile
+  allowed_account_ids = ["456112636403"]
+}
+variable "aws_profile" {
+  type        = string
+  default     = null
+  description = "Optional local CLI profile; CI uses OIDC environment credentials."
 }
 variable "alert_email" { type = string }
 variable "schedule_enabled" {

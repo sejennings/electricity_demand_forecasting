@@ -78,6 +78,8 @@ Constraints for each level:
 ## Saved project preferences
 
 - AWS help_level: MEDIUM.
+- AWS monthly usage budget: $10 or less, evaluated without promotional credits.
+- Automatic deployment is desired when usage controls are in place; do not disable it solely because it is automatic. Budget alerts are not a guaranteed billing cap.
 - Selected AWS Region: us-east-2. AWS CLI profile: default.
 - Follow the original GridCast architecture: Terraform, S3, Lambda, EventBridge Scheduler,
   Step Functions, then Glue/Athena and scheduled container-based modeling.

@@ -1,4 +1,4 @@
-"""Bounded, versioned historical ingestion for Lambda and Step Functions."""
+"""Bounded historical ingestion, bundled by Terraform and verified after deployment."""
 import csv
 import io
 import json

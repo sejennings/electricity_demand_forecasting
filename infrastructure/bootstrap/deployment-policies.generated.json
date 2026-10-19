@@ -1,0 +1,566 @@
+[
+  {
+    "Version": "2012-10-17",
+    "Statement": [
+      {
+        "Effect": "Allow",
+        "Action": [
+          "athena:GetNamedQuery",
+          "athena:GetTable",
+          "athena:GetWorkGroup",
+          "athena:ListTagsForResource"
+        ],
+        "Resource": [
+          "arn:aws:athena:us-east-2:456112636403:capacity-reservation/*",
+          "arn:aws:athena:us-east-2:456112636403:datacatalog/*",
+          "arn:aws:athena:us-east-2:456112636403:workgroup/gridcast-analytics",
+          "arn:aws:athena:us-east-2:456112636403:workgroup/gridcast-analytics/session/*",
+          "arn:aws:glue:us-east-2:456112636403:catalog",
+          "arn:aws:glue:us-east-2:456112636403:catalog/*",
+          "arn:aws:glue:us-east-2:456112636403:database/*",
+          "arn:aws:glue:us-east-2:456112636403:table/*/*"
+        ]
+      },
+      {
+        "Effect": "Allow",
+        "Action": [
+          "aws-portal:ViewBilling"
+        ],
+        "Resource": [
+          "*"
+        ]
+      },
+      {
+        "Effect": "Allow",
+        "Action": [
+          "budgets:ListTagsForResource",
+          "budgets:ViewBudget"
+        ],
+        "Resource": [
+          "arn:aws:budgets::456112636403:budget/GridCast-project-monthly",
+          "arn:aws:budgets::456112636403:budget/GridCast-project-monthly/action/*"
+        ]
+      },
+      {
+        "Effect": "Allow",
+        "Action": [
+          "cloudwatch:DescribeAlarms"
+        ],
+        "Resource": [
+          "arn:aws:cloudwatch:us-east-2:456112636403:alarm:*"
+        ]
+      },
+      {
+        "Effect": "Allow",
+        "Action": [
+          "cloudwatch:ListTagsForResource"
+        ],
+        "Resource": [
+          "*"
+        ]
+      },
+      {
+        "Effect": "Allow",
+        "Action": [
+          "ec2:DescribeInternetGateways",
+          "ec2:DescribeNetworkAcls",
+          "ec2:DescribeNetworkInterfaces",
+          "ec2:DescribeRouteTables",
+          "ec2:DescribeSecurityGroups",
+          "ec2:DescribeSubnets",
+          "ec2:DescribeTags",
+          "ec2:DescribeVpcs"
+        ],
+        "Resource": [
+          "*"
+        ]
+      },
+      {
+        "Effect": "Allow",
+        "Action": [
+          "ec2:DescribeVpcAttribute"
+        ],
+        "Resource": [
+          "arn:aws:ec2:us-east-2:456112636403:vpc/*"
+        ]
+      },
+      {
+        "Effect": "Allow",
+        "Action": [
+          "ecr:DescribeRepositories",
+          "ecr:GetLifecyclePolicy",
+          "ecr:ListTagsForResource"
+        ],
+        "Resource": [
+          "arn:aws:ecr:us-east-2:456112636403:repository/gridcast-model"
+        ]
+      },
+      {
+        "Effect": "Allow",
+        "Action": [
+          "ecs:DeregisterTaskDefinition",
+          "ecs:DescribeTaskDefinition",
+          "ecs:ListTagsForResource",
+          "ecs:TagResource",
+          "ecs:UntagResource"
+        ],
+        "Resource": [
+          "*"
+        ]
+      },
+      {
+        "Effect": "Allow",
+        "Action": [
+          "ecs:DescribeClusters",
+          "ecs:RegisterTaskDefinition"
+        ],
+        "Resource": [
+          "arn:aws:ecs:us-east-2:456112636403:cluster/gridcast",
+          "arn:aws:ecs:us-east-2:456112636403:task-definition/*:*"
+        ]
+      },
+      {
+        "Effect": "Allow",
+        "Action": [
+          "glue:GetDatabase",
+          "glue:GetPartitionIndexes",
+          "glue:GetTable"
+        ],
+        "Resource": [
+          "arn:aws:glue:us-east-2:456112636403:catalog",
+          "arn:aws:glue:us-east-2:456112636403:catalog/*",
+          "arn:aws:glue:us-east-2:456112636403:database/*",
+          "arn:aws:glue:us-east-2:456112636403:table/*/*"
+        ]
+      },
+      {
+        "Effect": "Allow",
+        "Action": [
+          "glue:GetTags"
+        ],
+        "Resource": [
+          "*"
+        ]
+      },
+      {
+        "Effect": "Allow",
+        "Action": [
+          "iam:GetRole",
+          "iam:GetRolePolicy",
+          "iam:ListAttachedRolePolicies",
+          "iam:ListInstanceProfileTags",
+          "iam:ListMFADeviceTags",
+          "iam:ListOpenIDConnectProviderTags",
+          "iam:ListPolicyTags",
+          "iam:ListRolePolicies",
+          "iam:ListRoleTags",
+          "iam:ListSAMLProviderTags",
+          "iam:ListServerCertificateTags",
+          "iam:ListUserTags",
+          "iam:PutRolePolicy"
+        ],
+        "Resource": [
+          "arn:aws:iam::456112636403:instance-profile/*",
+          "arn:aws:iam::456112636403:mfa/*",
+          "arn:aws:iam::456112636403:oidc-provider/*",
+          "arn:aws:iam::456112636403:policy/*",
+          "arn:aws:iam::456112636403:role/gridcast-forecast-execution",
+          "arn:aws:iam::456112636403:role/gridcast-forecast-task",
+          "arn:aws:iam::456112636403:role/gridcast-forecast-workflow",
+          "arn:aws:iam::456112636403:role/gridcast-ingestion-lambda",
+          "arn:aws:iam::456112636403:role/gridcast-ingestion-workflow",
+          "arn:aws:iam::456112636403:role/gridcast-scheduler",
+          "arn:aws:iam::456112636403:saml-provider/*",
+          "arn:aws:iam::456112636403:server-certificate/*",
+          "arn:aws:iam::456112636403:user/*"
+        ]
+      },
+      {
+        "Effect": "Allow",
+        "Action": [
+          "iam:PassRole"
+        ],
+        "Resource": [
+          "arn:aws:iam::456112636403:role/gridcast-forecast-task",
+          "arn:aws:iam::456112636403:role/gridcast-forecast-execution"
+        ],
+        "Condition": {
+          "StringEquals": {
+            "iam:PassedToService": [
+              "ecs-tasks.amazonaws.com"
+            ]
+          }
+        }
+      },
+      {
+        "Effect": "Allow",
+        "Action": [
+          "iam:PassRole"
+        ],
+        "Resource": [
+          "arn:aws:iam::456112636403:role/gridcast-ingestion-lambda"
+        ],
+        "Condition": {
+          "StringEquals": {
+            "iam:PassedToService": [
+              "lambda.amazonaws.com"
+            ]
+          }
+        }
+      },
+      {
+        "Effect": "Allow",
+        "Action": [
+          "iam:PassRole"
+        ],
+        "Resource": [
+          "arn:aws:iam::456112636403:role/gridcast-ingestion-workflow",
+          "arn:aws:iam::456112636403:role/gridcast-forecast-workflow"
+        ],
+        "Condition": {
+          "StringEquals": {
+            "iam:PassedToService": [
+              "states.amazonaws.com"
+            ]
+          }
+        }
+      },
+      {
+        "Effect": "Allow",
+        "Action": [
+          "lambda:DeleteFunctionCodeSigningConfig",
+          "lambda:DeleteFunctionConcurrency",
+          "lambda:DeleteLayerVersion",
+          "lambda:GetFunction",
+          "lambda:GetFunctionCodeSigningConfig",
+          "lambda:GetFunctionConcurrency",
+          "lambda:GetFunctionConfiguration",
+          "lambda:GetLayerVersion",
+          "lambda:ListVersionsByFunction",
+          "lambda:PassCapacityProvider",
+          "lambda:PublishVersion",
+          "lambda:PutFunctionCodeSigningConfig",
+          "lambda:PutFunctionConcurrency",
+          "lambda:UpdateFunctionCode",
+          "lambda:UpdateFunctionConfiguration"
+        ],
+        "Resource": [
+          "arn:aws:lambda:us-east-2:456112636403:capacity-provider:*",
+          "arn:aws:lambda:us-east-2:456112636403:code-signing-config:*",
+          "arn:aws:lambda:us-east-2:456112636403:function:gridcast-ingestion",
+          "arn:aws:lambda:us-east-2:456112636403:layer:*:*"
+        ]
+      },
+      {
+        "Effect": "Allow",
+        "Action": [
+          "lambda:ListTags",
+          "lambda:TagResource",
+          "lambda:UntagResource"
+        ],
+        "Resource": [
+          "*"
+        ]
+      },
+      {
+        "Effect": "Allow",
+        "Action": [
+          "lambda:PublishLayerVersion"
+        ],
+        "Resource": [
+          "arn:aws:lambda:us-east-2:456112636403:layer:*"
+        ]
+      },
+      {
+        "Effect": "Allow",
+        "Action": [
+          "logs:DescribeLogGroups",
+          "logs:ListTagsForResource"
+        ],
+        "Resource": [
+          "*"
+        ]
+      },
+      {
+        "Effect": "Allow",
+        "Action": [
+          "oam:ListTagsForResource"
+        ],
+        "Resource": [
+          "*"
+        ]
+      },
+      {
+        "Effect": "Allow",
+        "Action": [
+          "s3:AbortMultipartUpload",
+          "s3:BypassGovernanceRetention",
+          "s3:DeleteObjectTagging",
+          "s3:DeleteObjectVersionTagging",
+          "s3:GetObject",
+          "s3:GetObjectLegalHold",
+          "s3:GetObjectRetention",
+          "s3:GetObjectTagging",
+          "s3:GetObjectVersionTagging",
+          "s3:PutObject",
+          "s3:PutObjectAcl",
+          "s3:PutObjectLegalHold",
+          "s3:PutObjectRetention",
+          "s3:PutObjectTagging",
+          "s3:PutObjectVersionAcl",
+          "s3:PutObjectVersionTagging"
+        ],
+        "Resource": [
+          "arn:aws:s3:::gridcast-lake-456112636403-us-east-2/*",
+          "arn:aws:s3:us-east-2:456112636403:accesspoint/*/object/*"
+        ]
+      }
+    ]
+  },
+  {
+    "Version": "2012-10-17",
+    "Statement": [
+      {
+        "Effect": "Allow",
+        "Action": [
+          "s3:GetAccelerateConfiguration",
+          "s3:GetBucketAcl",
+          "s3:GetBucketCORS",
+          "s3:GetBucketLogging",
+          "s3:GetBucketObjectLockConfiguration",
+          "s3:GetBucketOwnershipControls",
+          "s3:GetBucketPolicy",
+          "s3:GetBucketPublicAccessBlock",
+          "s3:GetBucketRequestPayment",
+          "s3:GetBucketTagging",
+          "s3:GetBucketVersioning",
+          "s3:GetBucketWebsite",
+          "s3:GetEncryptionConfiguration",
+          "s3:GetLifecycleConfiguration",
+          "s3:GetReplicationConfiguration",
+          "s3:ListBucket",
+          "s3:PutBucketTagging"
+        ],
+        "Resource": [
+          "arn:aws:s3:::gridcast-lake-456112636403-us-east-2",
+          "arn:aws:s3:us-east-2:456112636403:accesspoint/*"
+        ]
+      },
+      {
+        "Effect": "Allow",
+        "Action": [
+          "s3-object-lambda:AbortMultipartUpload",
+          "s3-object-lambda:DeleteObjectTagging",
+          "s3-object-lambda:GetObject",
+          "s3-object-lambda:GetObjectTagging",
+          "s3-object-lambda:PutObject",
+          "s3-object-lambda:PutObjectAcl",
+          "s3-object-lambda:PutObjectLegalHold",
+          "s3-object-lambda:PutObjectRetention",
+          "s3-object-lambda:PutObjectTagging"
+        ],
+        "Resource": [
+          "arn:aws:s3:::*/*",
+          "arn:aws:s3:us-east-2:456112636403:accesspoint/*/object/*"
+        ]
+      },
+      {
+        "Effect": "Allow",
+        "Action": [
+          "s3express:GetLifecycleConfiguration"
+        ],
+        "Resource": [
+          "arn:aws:s3:::*"
+        ]
+      },
+      {
+        "Effect": "Allow",
+        "Action": [
+          "scheduler:GetSchedule",
+          "scheduler:GetScheduleGroup",
+          "scheduler:ListTagsForResource"
+        ],
+        "Resource": [
+          "arn:aws:scheduler:us-east-2:456112636403:schedule-group/*",
+          "arn:aws:scheduler:us-east-2:456112636403:schedule/gridcast/*"
+        ]
+      },
+      {
+        "Effect": "Allow",
+        "Action": [
+          "secretsmanager:DescribeSecret",
+          "secretsmanager:GetResourcePolicy"
+        ],
+        "Resource": [
+          "arn:aws:secretsmanager:us-east-2:456112636403:secret:*"
+        ]
+      },
+      {
+        "Effect": "Allow",
+        "Action": [
+          "sns:GetSubscriptionAttributes",
+          "sns:GetTopicAttributes",
+          "sns:ListSubscriptionsByTopic",
+          "sns:ListTagsForResource"
+        ],
+        "Resource": [
+          "arn:aws:sns:us-east-2:456112636403:gridcast-alerts"
+        ]
+      },
+      {
+        "Effect": "Allow",
+        "Action": [
+          "sqs:GetQueueAttributes",
+          "sqs:ListQueueTags"
+        ],
+        "Resource": [
+          "arn:aws:sqs:us-east-2:456112636403:gridcast-scheduler-dlq"
+        ]
+      },
+      {
+        "Effect": "Allow",
+        "Action": [
+          "states:DescribeStateMachine",
+          "states:ListStateMachineVersions",
+          "states:ListTagsForResource",
+          "states:PublishStateMachineVersion",
+          "states:TagResource",
+          "states:UntagResource",
+          "states:UpdateStateMachine"
+        ],
+        "Resource": [
+          "arn:aws:states:us-east-2:456112636403:activity:*",
+          "arn:aws:states:us-east-2:456112636403:stateMachine:*"
+        ]
+      },
+      {
+        "Effect": "Allow",
+        "Action": [
+          "ecr:DescribeImageScanFindings"
+        ],
+        "Resource": [
+          "arn:aws:ecr:us-east-2:456112636403:repository/gridcast-model"
+        ]
+      },
+      {
+        "Effect": "Allow",
+        "Action": [
+          "s3:GetObject",
+          "s3:GetObjectAcl",
+          "s3:GetObjectLegalHold",
+          "s3:GetObjectRetention",
+          "s3:GetObjectTagging",
+          "s3:GetObjectVersion",
+          "s3:PutObject",
+          "s3:PutObjectAcl",
+          "s3:PutObjectLegalHold",
+          "s3:PutObjectRetention",
+          "s3:PutObjectTagging"
+        ],
+        "Resource": [
+          "arn:aws:s3:::*/*",
+          "arn:aws:s3:us-east-2:456112636403:accesspoint/*/object/*"
+        ]
+      },
+      {
+        "Effect": "Allow",
+        "Action": [
+          "s3:ListBucket"
+        ],
+        "Resource": [
+          "arn:aws:s3:::*",
+          "arn:aws:s3:us-east-2:456112636403:accesspoint/*"
+        ]
+      },
+      {
+        "Effect": "Allow",
+        "Action": [
+          "s3-object-lambda:GetObject",
+          "s3-object-lambda:PutObject"
+        ],
+        "Resource": [
+          "arn:aws:s3:::*/*",
+          "arn:aws:s3:us-east-2:456112636403:accesspoint/*/object/*"
+        ]
+      },
+      {
+        "Effect": "Allow",
+        "Action": [
+          "s3-object-lambda:ListBucket"
+        ],
+        "Resource": [
+          "arn:aws:s3:::*",
+          "arn:aws:s3:us-east-2:456112636403:accesspoint/*"
+        ]
+      },
+      {
+        "Effect": "Allow",
+        "Action": [
+          "states:DescribeExecution",
+          "states:StartExecution",
+          "states:StopExecution"
+        ],
+        "Resource": [
+          "arn:aws:states:us-east-2:456112636403:execution:*:*",
+          "arn:aws:states:us-east-2:456112636403:express:*:*:*",
+          "arn:aws:states:us-east-2:456112636403:stateMachine:*"
+        ]
+      },
+      {
+        "Effect": "Allow",
+        "Action": [
+          "s3:ListBucket"
+        ],
+        "Resource": [
+          "arn:aws:s3:::gridcast-tfstate-456112636403-us-east-2"
+        ]
+      },
+      {
+        "Effect": "Allow",
+        "Action": [
+          "s3:GetObject",
+          "s3:PutObject"
+        ],
+        "Resource": [
+          "arn:aws:s3:::gridcast-tfstate-456112636403-us-east-2/production/terraform.tfstate"
+        ]
+      },
+      {
+        "Effect": "Allow",
+        "Action": [
+          "s3:GetObject",
+          "s3:PutObject",
+          "s3:DeleteObject"
+        ],
+        "Resource": [
+          "arn:aws:s3:::gridcast-tfstate-456112636403-us-east-2/production/terraform.tfstate.tflock"
+        ]
+      },
+      {
+        "Effect": "Allow",
+        "Action": [
+          "ecr:GetAuthorizationToken"
+        ],
+        "Resource": [
+          "*"
+        ]
+      },
+      {
+        "Effect": "Allow",
+        "Action": [
+          "ecr:BatchCheckLayerAvailability",
+          "ecr:InitiateLayerUpload",
+          "ecr:UploadLayerPart",
+          "ecr:CompleteLayerUpload",
+          "ecr:PutImage",
+          "ecr:BatchGetImage",
+          "ecr:GetDownloadUrlForLayer",
+          "ecr:DescribeImages"
+        ],
+        "Resource": [
+          "arn:aws:ecr:us-east-2:456112636403:repository/gridcast-model"
+        ]
+      }
+    ]
+  }
+]
