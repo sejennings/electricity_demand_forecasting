@@ -3,10 +3,27 @@ import unittest
 from datetime import date
 from pathlib import Path
 from unittest.mock import patch
-from gridcast.ingestion import cached_request, demand_rows, month_windows, quality, timestamp
+from gridcast.ingestion import cached_request, demand_rows, month_windows, quality, timestamp, request_json, SourceRequestError
 
 
 class ImportTests(unittest.TestCase):
+    def test_source_errors_identify_host_without_exposing_credentials(self):
+        from urllib.error import URLError, HTTPError
+        import traceback
+        url = 'https://api.eia.gov/v2/data'
+        key = 'opaque-test-key'
+        for error, retryable in [(URLError('failed URL?api_key=' + key), True),
+                                 (HTTPError(url + '?api_key=' + key, 403, key, {}, None), False)]:
+            with patch('gridcast.ingestion.urlopen', side_effect=error):
+                try:
+                    request_json(url, {'api_key': key}, attempts=1)
+                except SourceRequestError as exc:
+                    self.assertEqual(exc.retryable, retryable)
+                    self.assertIn('api.eia.gov', str(exc))
+                    self.assertNotIn(key, ''.join(traceback.format_exception(exc)))
+                else:
+                    self.fail('Expected a sanitized source error')
+
     def test_leap_month(self):
         self.assertEqual(len(list(month_windows(date(2024, 2, 28), date(2024, 3, 1)))), 2)
 
