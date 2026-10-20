@@ -7,11 +7,53 @@ import unittest
 import zipfile
 from scripts.build_arrow_layer import build
 from scripts.check_deployment_plan import check
-from scripts.check_image_scan import platform_digest
+from scripts.check_image_scan import platform_digest, wait_for_scan, start_scan
 from scripts.verify_release import verify_manifest
 
 
 class DeploymentTests(unittest.TestCase):
+    def test_old_layer_cleanup_requires_a_known_active_replacement(self):
+        layer = {'address':'layer', 'type':'aws_lambda_layer_version', 'deposed':'old',
+                 'change':{'actions':['delete'], 'before':{'arn':'old-arn'}}}
+        plan = {'resource_changes':[layer], 'planned_values':{'root_module':{'resources':[
+            {'address':'layer', 'values':{'arn':'new-arn'}}]}}}
+        check(plan)
+        for active in [{'arn':'old-arn'}, {}]:
+            plan['planned_values']['root_module']['resources'][0]['values'] = active
+            with self.assertRaisesRegex(ValueError, 'Unexpected destruction'):
+                check(plan)
+        plan['planned_values']['root_module']['resources'] = []
+        with self.assertRaisesRegex(ValueError, 'Unexpected destruction'):
+            check(plan)
+
+    def test_explicit_scan_start_only_tolerates_frequency_limit(self):
+        from types import SimpleNamespace
+        from unittest.mock import Mock
+        class ScanLimit(Exception):
+            pass
+        client = Mock()
+        client.exceptions = SimpleNamespace(LimitExceededException=ScanLimit)
+        start_scan(client, 'linux-digest')
+        client.start_image_scan.assert_called_once_with(repositoryName='gridcast-model', imageId={'imageDigest':'linux-digest'})
+        client.start_image_scan.side_effect = ScanLimit()
+        start_scan(client, 'linux-digest')
+        client.start_image_scan.side_effect = PermissionError('denied')
+        with self.assertRaises(PermissionError):
+            start_scan(client, 'linux-digest')
+
+    def test_scan_deadline_and_terminal_failures_block_release(self):
+        from unittest.mock import Mock, patch
+        client = Mock()
+        client.describe_image_scan_findings.return_value = {'imageScanStatus': {'status': 'IN_PROGRESS'}}
+        with patch('scripts.check_image_scan.time.monotonic', side_effect=[0, 0, 2, 2]):
+            with self.assertRaises(TimeoutError):
+                wait_for_scan(client, 'image', timeout=1)
+        client.describe_image_scan_findings.return_value = {'imageScanStatus': {'status': 'FAILED'}}
+        with self.assertRaisesRegex(ValueError, 'FAILED'):
+            wait_for_scan(client, 'image')
+        client.describe_image_scan_findings.return_value = {'imageScanStatus': {'status': 'COMPLETE'}}
+        self.assertEqual(wait_for_scan(client, 'image')['imageScanStatus']['status'], 'COMPLETE')
+
     def test_rejects_unexpected_destruction(self):
         for resource_type,actions in [('aws_s3_bucket',['delete']),('aws_iam_role',['delete','create']),('aws_ecs_task_definition',['delete'])]:
             with self.assertRaisesRegex(ValueError,'Unexpected destruction'):

@@ -9,7 +9,7 @@ import time
 from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from urllib.error import HTTPError, URLError
-from urllib.parse import urlencode
+from urllib.parse import urlencode, urlsplit
 from urllib.request import urlopen
 
 EIA_URL = "https://api.eia.gov/v2/electricity/rto/region-data/data/"
@@ -17,7 +17,17 @@ WEATHER_URL = "https://archive-api.open-meteo.com/v1/archive"
 VARIABLES = ["temperature_2m", "relative_humidity_2m", "precipitation", "wind_speed_10m"]
 
 
+class SourceRequestError(RuntimeError):
+    """Sanitized source failure with explicit transient/permanent classification."""
+    def __init__(self, message, *, retryable):
+        super().__init__(message)
+        self.retryable = retryable
+
+
 def request_json(url, params, *, timeout=90, attempts=5):
+    if attempts < 1 or timeout <= 0:
+        raise ValueError('Source requests need positive timeout and attempts')
+    host = urlsplit(url).hostname or 'source'
     for attempt in range(attempts):
         try:
             with urlopen(url + "?" + urlencode(params), timeout=timeout) as response:
@@ -27,10 +37,12 @@ def request_json(url, params, *, timeout=90, attempts=5):
             return payload
         except HTTPError as exc:
             if exc.code not in (429, 500, 502, 503, 504) or attempt == attempts - 1:
-                raise RuntimeError(f"Source request failed (HTTP {exc.code})") from None
-        except (URLError, TimeoutError):
+                raise SourceRequestError(f"{host} request failed (HTTP {exc.code})",
+                                         retryable=exc.code in (429, 500, 502, 503, 504)) from None
+        except (URLError, TimeoutError) as exc:
             if attempt == attempts - 1:
-                raise RuntimeError("Source request failed after retries") from None
+                raise SourceRequestError(f"{host} request failed after {attempts} attempts ({type(exc).__name__})",
+                                         retryable=True) from None
         time.sleep(2 ** attempt)
 
 

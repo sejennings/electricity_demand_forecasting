@@ -2,8 +2,10 @@
 import argparse
 import json
 import os
+import time
 from pathlib import Path
 import boto3
+from botocore.config import Config
 
 
 def platform_digest(manifest,digest):
@@ -15,17 +17,40 @@ def platform_digest(manifest,digest):
     return choices[0]
 
 
+def wait_for_scan(client, digest, timeout=600):
+    deadline = time.monotonic() + timeout
+    while time.monotonic() < deadline:
+        scan = client.describe_image_scan_findings(repositoryName='gridcast-model', imageId={'imageDigest': digest})
+        status = scan['imageScanStatus']['status']
+        if status == 'COMPLETE':
+            return scan
+        if status != 'IN_PROGRESS':
+            raise ValueError(f'Image scan cannot complete: {status}')
+        remaining = deadline - time.monotonic()
+        if remaining > 0:
+            time.sleep(min(5, remaining))
+    raise TimeoutError(f'Image scan incomplete after {timeout:g} seconds; release blocked')
+
+
+def start_scan(client, digest):
+    try:
+        client.start_image_scan(repositoryName='gridcast-model', imageId={'imageDigest': digest})
+    except client.exceptions.LimitExceededException:
+        # Scan-on-push or a previous attempt may already have used today's scan.
+        # The completed result is still required; a limit never permits release.
+        pass
+
+
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--manifest',type=Path,required=True)
     parser.add_argument('--digest',required=True)
     args=parser.parse_args()
     digest=platform_digest(json.loads(args.manifest.read_text()),args.digest)
-    client=boto3.Session(region_name='us-east-2').client('ecr')
-    client.get_waiter('image_scan_complete').wait(repositoryName='gridcast-model',imageId={'imageDigest':digest},WaiterConfig={'Delay':5,'MaxAttempts':36})
-    scan=client.describe_image_scan_findings(repositoryName='gridcast-model',imageId={'imageDigest':digest})
-    if scan['imageScanStatus']['status']!='COMPLETE':
-        raise ValueError('Image scan did not complete')
+    client=boto3.Session(region_name='us-east-2').client('ecr', config=Config(
+        connect_timeout=5, read_timeout=10, retries={'mode':'standard', 'total_max_attempts':1}))
+    start_scan(client,digest)
+    scan=wait_for_scan(client,digest)
     counts=scan['imageScanFindings'].get('findingSeverityCounts',{})
     print('ECR scan severity counts:',json.dumps(counts,sort_keys=True))
     summary=os.environ.get('GITHUB_STEP_SUMMARY')

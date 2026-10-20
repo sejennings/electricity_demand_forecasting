@@ -80,13 +80,19 @@ and owner review of deployment permissions.
    authentication.
 2. Assume the one-hour OIDC deployment role. Build/push an immutable tag containing
    commit/run/attempt IDs and resolve its digest.
-3. Scan the Linux amd64 image: critical findings block deployment; high findings
-   are reported. Existing findings are documented in [scheduled forecasts](scheduled-forecasts.md).
+3. Explicitly start a basic scan of the Linux amd64 image; the registry may have
+   no scan-on-push rules even when the repository has its legacy scan flag set.
+   Reuse the existing result if AWS's once-per-24-hours scan limit is reached.
+   Critical findings block deployment; high findings
+   are reported. Allow up to ten minutes for AWS to finish the scan; an incomplete
+   scan blocks release. Existing findings are documented in [scheduled forecasts](scheduled-forecasts.md).
 4. Verify the S3 model SHA-256 without deserializing it. CI does not train or
    silently promote a different model.
 5. Plan against shared state, reject unexpected destruction and apply that exact
    plan. Only ECS task-definition and Lambda-layer replacements pass the deletion
-   guard. Temporary plans are removed and never uploaded as artifacts.
+   guard, plus cleanup of a deposed layer when a different, known active layer
+   remains at the same Terraform address. Temporary plans are removed and never
+   uploaded as artifacts.
 6. Run a real forecast, checking exit status, image/model/content hashes, snapshot
    availability, 24 consecutive future hours, issue time and the matching score.
    Future actuals are expected to remain pending.
@@ -104,6 +110,10 @@ and distinguishes enforced controls from planning allowances. Deployment checks
 limit monthly attempts, ECR image growth and the audited Terraform footprint.
 They are not a guaranteed billing cap. Automatic deployment remains desired;
 the current AWS OIDC policy restriction must be resolved before enabling it.
+When a new task revision makes a workflow definition unknown during planning,
+the guard requires the exact audited Terraform source hash and checks the existing
+workflow's task/retry/deadline shape. Changing that Terraform source requires
+another cost-policy review. Line endings are normalized across Windows and Linux.
 
 ## Policy provenance
 
@@ -126,3 +136,8 @@ uvx iam-policy-autopilot@latest generate-policies `
 
 Keep only reviewed policy documents in Git. Never apply policy-analysis plans
 that intentionally model replacements or use a placeholder image digest.
+
+The explicit ECR scan permission was generated from `scripts/check_image_scan.py`
+using the same Autopilot source command with `--service-hints ecr --tf-dir
+infrastructure/terraform`, then merged into the existing exact-repository scan
+statement. No wildcard scan permissions or enhanced-scanning charges were added.

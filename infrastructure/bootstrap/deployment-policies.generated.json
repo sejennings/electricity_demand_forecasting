@@ -436,7 +436,8 @@
       {
         "Effect": "Allow",
         "Action": [
-          "ecr:DescribeImageScanFindings"
+          "ecr:DescribeImageScanFindings",
+          "ecr:StartImageScan"
         ],
         "Resource": [
           "arn:aws:ecr:us-east-2:456112636403:repository/gridcast-model"
