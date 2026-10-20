@@ -81,7 +81,8 @@ and owner review of deployment permissions.
 2. Assume the one-hour OIDC deployment role. Build/push an immutable tag containing
    commit/run/attempt IDs and resolve its digest.
 3. Scan the Linux amd64 image: critical findings block deployment; high findings
-   are reported. Existing findings are documented in [scheduled forecasts](scheduled-forecasts.md).
+   are reported. Allow up to ten minutes for AWS to finish the scan; an incomplete
+   scan blocks release. Existing findings are documented in [scheduled forecasts](scheduled-forecasts.md).
 4. Verify the S3 model SHA-256 without deserializing it. CI does not train or
    silently promote a different model.
 5. Plan against shared state, reject unexpected destruction and apply that exact

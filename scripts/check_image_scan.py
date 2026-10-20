@@ -22,7 +22,7 @@ def main():
     args=parser.parse_args()
     digest=platform_digest(json.loads(args.manifest.read_text()),args.digest)
     client=boto3.Session(region_name='us-east-2').client('ecr')
-    client.get_waiter('image_scan_complete').wait(repositoryName='gridcast-model',imageId={'imageDigest':digest},WaiterConfig={'Delay':5,'MaxAttempts':36})
+    client.get_waiter('image_scan_complete').wait(repositoryName='gridcast-model',imageId={'imageDigest':digest},WaiterConfig={'Delay':5,'MaxAttempts':120})
     scan=client.describe_image_scan_findings(repositoryName='gridcast-model',imageId={'imageDigest':digest})
     if scan['imageScanStatus']['status']!='COMPLETE':
         raise ValueError('Image scan did not complete')
