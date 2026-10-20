@@ -32,6 +32,15 @@ def wait_for_scan(client, digest, timeout=600):
     raise TimeoutError('Image scan incomplete after ten minutes; release blocked')
 
 
+def start_scan(client, digest):
+    try:
+        client.start_image_scan(repositoryName='gridcast-model', imageId={'imageDigest': digest})
+    except client.exceptions.LimitExceededException:
+        # Scan-on-push or a previous attempt may already have used today's scan.
+        # The completed result is still required; a limit never permits release.
+        pass
+
+
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--manifest',type=Path,required=True)
@@ -40,6 +49,7 @@ def main():
     digest=platform_digest(json.loads(args.manifest.read_text()),args.digest)
     client=boto3.Session(region_name='us-east-2').client('ecr', config=Config(
         connect_timeout=5, read_timeout=10, retries={'mode':'standard', 'total_max_attempts':1}))
+    start_scan(client,digest)
     scan=wait_for_scan(client,digest)
     counts=scan['imageScanFindings'].get('findingSeverityCounts',{})
     print('ECR scan severity counts:',json.dumps(counts,sort_keys=True))

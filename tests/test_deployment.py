@@ -7,11 +7,26 @@ import unittest
 import zipfile
 from scripts.build_arrow_layer import build
 from scripts.check_deployment_plan import check
-from scripts.check_image_scan import platform_digest, wait_for_scan
+from scripts.check_image_scan import platform_digest, wait_for_scan, start_scan
 from scripts.verify_release import verify_manifest
 
 
 class DeploymentTests(unittest.TestCase):
+    def test_explicit_scan_start_only_tolerates_frequency_limit(self):
+        from types import SimpleNamespace
+        from unittest.mock import Mock
+        class ScanLimit(Exception):
+            pass
+        client = Mock()
+        client.exceptions = SimpleNamespace(LimitExceededException=ScanLimit)
+        start_scan(client, 'linux-digest')
+        client.start_image_scan.assert_called_once_with(repositoryName='gridcast-model', imageId={'imageDigest':'linux-digest'})
+        client.start_image_scan.side_effect = ScanLimit()
+        start_scan(client, 'linux-digest')
+        client.start_image_scan.side_effect = PermissionError('denied')
+        with self.assertRaises(PermissionError):
+            start_scan(client, 'linux-digest')
+
     def test_scan_deadline_and_terminal_failures_block_release(self):
         from unittest.mock import Mock, patch
         client = Mock()

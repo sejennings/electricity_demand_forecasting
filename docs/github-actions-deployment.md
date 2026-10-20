@@ -80,7 +80,10 @@ and owner review of deployment permissions.
    authentication.
 2. Assume the one-hour OIDC deployment role. Build/push an immutable tag containing
    commit/run/attempt IDs and resolve its digest.
-3. Scan the Linux amd64 image: critical findings block deployment; high findings
+3. Explicitly start a basic scan of the Linux amd64 image; the registry may have
+   no scan-on-push rules even when the repository has its legacy scan flag set.
+   Reuse the existing result if AWS's once-per-24-hours scan limit is reached.
+   Critical findings block deployment; high findings
    are reported. Allow up to ten minutes for AWS to finish the scan; an incomplete
    scan blocks release. Existing findings are documented in [scheduled forecasts](scheduled-forecasts.md).
 4. Verify the S3 model SHA-256 without deserializing it. CI does not train or
@@ -131,3 +134,8 @@ uvx iam-policy-autopilot@latest generate-policies `
 
 Keep only reviewed policy documents in Git. Never apply policy-analysis plans
 that intentionally model replacements or use a placeholder image digest.
+
+The explicit ECR scan permission was generated from `scripts/check_image_scan.py`
+using the same Autopilot source command with `--service-hints ecr --tf-dir
+infrastructure/terraform`, then merged into the existing exact-repository scan
+statement. No wildcard scan permissions or enhanced-scanning charges were added.
