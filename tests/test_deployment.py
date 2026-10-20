@@ -12,6 +12,20 @@ from scripts.verify_release import verify_manifest
 
 
 class DeploymentTests(unittest.TestCase):
+    def test_old_layer_cleanup_requires_a_known_active_replacement(self):
+        layer = {'address':'layer', 'type':'aws_lambda_layer_version', 'deposed':'old',
+                 'change':{'actions':['delete'], 'before':{'arn':'old-arn'}}}
+        plan = {'resource_changes':[layer], 'planned_values':{'root_module':{'resources':[
+            {'address':'layer', 'values':{'arn':'new-arn'}}]}}}
+        check(plan)
+        for active in [{'arn':'old-arn'}, {}]:
+            plan['planned_values']['root_module']['resources'][0]['values'] = active
+            with self.assertRaisesRegex(ValueError, 'Unexpected destruction'):
+                check(plan)
+        plan['planned_values']['root_module']['resources'] = []
+        with self.assertRaisesRegex(ValueError, 'Unexpected destruction'):
+            check(plan)
+
     def test_explicit_scan_start_only_tolerates_frequency_limit(self):
         from types import SimpleNamespace
         from unittest.mock import Mock

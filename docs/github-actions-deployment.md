@@ -90,7 +90,9 @@ and owner review of deployment permissions.
    silently promote a different model.
 5. Plan against shared state, reject unexpected destruction and apply that exact
    plan. Only ECS task-definition and Lambda-layer replacements pass the deletion
-   guard. Temporary plans are removed and never uploaded as artifacts.
+   guard, plus cleanup of a deposed layer when a different, known active layer
+   remains at the same Terraform address. Temporary plans are removed and never
+   uploaded as artifacts.
 6. Run a real forecast, checking exit status, image/model/content hashes, snapshot
    availability, 24 consecutive future hours, issue time and the matching score.
    Future actuals are expected to remain pending.
