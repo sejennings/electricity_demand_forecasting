@@ -104,6 +104,10 @@ and distinguishes enforced controls from planning allowances. Deployment checks
 limit monthly attempts, ECR image growth and the audited Terraform footprint.
 They are not a guaranteed billing cap. Automatic deployment remains desired;
 the current AWS OIDC policy restriction must be resolved before enabling it.
+When a new task revision makes a workflow definition unknown during planning,
+the guard requires the exact audited Terraform source hash and checks the existing
+workflow's task/retry/deadline shape. Changing that Terraform source requires
+another cost-policy review. Line endings are normalized across Windows and Linux.
 
 ## Policy provenance
 

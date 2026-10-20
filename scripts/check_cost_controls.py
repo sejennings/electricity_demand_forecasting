@@ -1,5 +1,6 @@
 """Enforce the audited footprint; these controls are not a billing cap."""
 import json
+import hashlib
 from decimal import Decimal
 from pathlib import Path
 
@@ -30,7 +31,22 @@ def check_plan(plan, policy=None):
             if actual != limit:
                 raise ValueError(f'Cost control changed or unknown: {address}.{field}')
         if 'workflow_limits' in rule:
-            definition = json.loads(values['definition'])
+            raw_definition = values.get('definition')
+            if raw_definition is None:
+                # A new pinned ECS revision makes jsonencode unknown at plan time.
+                # Accept only the exact audited HCL, with no variable-driven cost
+                # settings, and verify the existing definition's limits as well.
+                source = rule.get('definition_source', {})
+                path = POLICY.parents[1] / source.get('path', '')
+                if not path.is_file() or hashlib.sha256(path.read_text().encode()).hexdigest() != source.get('sha256'):
+                    raise ValueError(f'Unknown workflow definition requires audited source: {address}')
+                change = next((r['change'] for r in plan.get('resource_changes', []) if r['address'] == address), {})
+                if change.get('after_unknown', {}).get('definition') is not True:
+                    raise ValueError(f'Missing workflow definition: {address}')
+                raw_definition = (change.get('before') or {}).get('definition')
+                if raw_definition is None:
+                    raise ValueError(f'No audited existing workflow: {address}')
+            definition = json.loads(raw_definition)
             shape = {'timeout': definition.get('TimeoutSeconds'), 'states': {
                 name: {key: state[key] for key in ['Type', 'Resource', 'TimeoutSeconds', 'Retry'] if key in state}
                 for name, state in definition['States'].items()}}

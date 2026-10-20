@@ -278,6 +278,10 @@
             ]
           }
         }
+      },
+      "definition_source": {
+        "path": "infrastructure/terraform/forecasting.tf",
+        "sha256": "de081d05f31749e8ae8df3fb56f3f71dd835fb8a4d99cf4c11fab21304e7754c"
       }
     },
     "aws_sfn_state_machine.ingestion": {
@@ -324,6 +328,10 @@
             ]
           }
         }
+      },
+      "definition_source": {
+        "path": "infrastructure/terraform/main.tf",
+        "sha256": "c7c54f22f5615485cef6b542fc95eab9c67e79efb739524a6d68772296f588c5"
       }
     },
     "aws_sns_topic.alerts": {
