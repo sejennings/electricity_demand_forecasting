@@ -29,7 +29,7 @@ def wait_for_scan(client, digest, timeout=600):
         remaining = deadline - time.monotonic()
         if remaining > 0:
             time.sleep(min(5, remaining))
-    raise TimeoutError('Image scan incomplete after ten minutes; release blocked')
+    raise TimeoutError(f'Image scan incomplete after {timeout:g} seconds; release blocked')
 
 
 def start_scan(client, digest):
