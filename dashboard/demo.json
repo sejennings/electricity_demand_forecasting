@@ -1,0 +1,352 @@
+{
+  "generated_at_utc": "2026-10-18T16:00:00Z",
+  "demo": true,
+  "runs": [
+    {
+      "id": "demo-18",
+      "issue_time_utc": "2026-10-18T14:30:00+00:00",
+      "origin_utc": "2026-10-18T15:00:00+00:00",
+      "rows": [
+        {
+          "timestamp_utc": "2026-10-18T15:00:00+00:00",
+          "horizon_hours": 1,
+          "forecast_mw": 10600.0,
+          "actual_mw": null
+        },
+        {
+          "timestamp_utc": "2026-10-18T16:00:00+00:00",
+          "horizon_hours": 2,
+          "forecast_mw": 11034.0,
+          "actual_mw": null
+        },
+        {
+          "timestamp_utc": "2026-10-18T17:00:00+00:00",
+          "horizon_hours": 3,
+          "forecast_mw": 11500.0,
+          "actual_mw": null
+        },
+        {
+          "timestamp_utc": "2026-10-18T18:00:00+00:00",
+          "horizon_hours": 4,
+          "forecast_mw": 11966.0,
+          "actual_mw": null
+        },
+        {
+          "timestamp_utc": "2026-10-18T19:00:00+00:00",
+          "horizon_hours": 5,
+          "forecast_mw": 12400.0,
+          "actual_mw": null
+        },
+        {
+          "timestamp_utc": "2026-10-18T20:00:00+00:00",
+          "horizon_hours": 6,
+          "forecast_mw": 12773.0,
+          "actual_mw": null
+        },
+        {
+          "timestamp_utc": "2026-10-18T21:00:00+00:00",
+          "horizon_hours": 7,
+          "forecast_mw": 13059.0,
+          "actual_mw": null
+        },
+        {
+          "timestamp_utc": "2026-10-18T22:00:00+00:00",
+          "horizon_hours": 8,
+          "forecast_mw": 13239.0,
+          "actual_mw": null
+        },
+        {
+          "timestamp_utc": "2026-10-18T23:00:00+00:00",
+          "horizon_hours": 9,
+          "forecast_mw": 13300.0,
+          "actual_mw": null
+        },
+        {
+          "timestamp_utc": "2026-10-19T00:00:00+00:00",
+          "horizon_hours": 10,
+          "forecast_mw": 13239.0,
+          "actual_mw": null
+        },
+        {
+          "timestamp_utc": "2026-10-19T01:00:00+00:00",
+          "horizon_hours": 11,
+          "forecast_mw": 13059.0,
+          "actual_mw": null
+        },
+        {
+          "timestamp_utc": "2026-10-19T02:00:00+00:00",
+          "horizon_hours": 12,
+          "forecast_mw": 12773.0,
+          "actual_mw": null
+        },
+        {
+          "timestamp_utc": "2026-10-19T03:00:00+00:00",
+          "horizon_hours": 13,
+          "forecast_mw": 12400.0,
+          "actual_mw": null
+        },
+        {
+          "timestamp_utc": "2026-10-19T04:00:00+00:00",
+          "horizon_hours": 14,
+          "forecast_mw": 11966.0,
+          "actual_mw": null
+        },
+        {
+          "timestamp_utc": "2026-10-19T05:00:00+00:00",
+          "horizon_hours": 15,
+          "forecast_mw": 11500.0,
+          "actual_mw": null
+        },
+        {
+          "timestamp_utc": "2026-10-19T06:00:00+00:00",
+          "horizon_hours": 16,
+          "forecast_mw": 11034.0,
+          "actual_mw": null
+        },
+        {
+          "timestamp_utc": "2026-10-19T07:00:00+00:00",
+          "horizon_hours": 17,
+          "forecast_mw": 10600.0,
+          "actual_mw": null
+        },
+        {
+          "timestamp_utc": "2026-10-19T08:00:00+00:00",
+          "horizon_hours": 18,
+          "forecast_mw": 10227.0,
+          "actual_mw": null
+        },
+        {
+          "timestamp_utc": "2026-10-19T09:00:00+00:00",
+          "horizon_hours": 19,
+          "forecast_mw": 9941.0,
+          "actual_mw": null
+        },
+        {
+          "timestamp_utc": "2026-10-19T10:00:00+00:00",
+          "horizon_hours": 20,
+          "forecast_mw": 9761.0,
+          "actual_mw": null
+        },
+        {
+          "timestamp_utc": "2026-10-19T11:00:00+00:00",
+          "horizon_hours": 21,
+          "forecast_mw": 9700.0,
+          "actual_mw": null
+        },
+        {
+          "timestamp_utc": "2026-10-19T12:00:00+00:00",
+          "horizon_hours": 22,
+          "forecast_mw": 9761.0,
+          "actual_mw": null
+        },
+        {
+          "timestamp_utc": "2026-10-19T13:00:00+00:00",
+          "horizon_hours": 23,
+          "forecast_mw": 9941.0,
+          "actual_mw": null
+        },
+        {
+          "timestamp_utc": "2026-10-19T14:00:00+00:00",
+          "horizon_hours": 24,
+          "forecast_mw": 10227.0,
+          "actual_mw": null
+        }
+      ],
+      "metrics": {
+        "hours": 0,
+        "mae_mw": null,
+        "rmse_mw": null,
+        "wape_percent": null
+      },
+      "status": "pending",
+      "scored_hours": 0,
+      "pending_hours": 24,
+      "scored_at_utc": null,
+      "model_sha256": "DEMO",
+      "image_uri": "DEMO"
+    },
+    {
+      "id": "demo-17",
+      "issue_time_utc": "2026-10-17T14:30:00+00:00",
+      "origin_utc": "2026-10-17T15:00:00+00:00",
+      "rows": [
+        {
+          "timestamp_utc": "2026-10-17T15:00:00+00:00",
+          "horizon_hours": 1,
+          "forecast_mw": 10600.0,
+          "actual_mw": 10780.0
+        },
+        {
+          "timestamp_utc": "2026-10-17T16:00:00+00:00",
+          "horizon_hours": 2,
+          "forecast_mw": 11034.0,
+          "actual_mw": 11131.254415056264
+        },
+        {
+          "timestamp_utc": "2026-10-17T17:00:00+00:00",
+          "horizon_hours": 3,
+          "forecast_mw": 11500.0,
+          "actual_mw": 11425.093569421515
+        },
+        {
+          "timestamp_utc": "2026-10-17T18:00:00+00:00",
+          "horizon_hours": 4,
+          "forecast_mw": 11966.0,
+          "actual_mw": 11787.80135061192
+        },
+        {
+          "timestamp_utc": "2026-10-17T19:00:00+00:00",
+          "horizon_hours": 5,
+          "forecast_mw": 12400.0,
+          "actual_mw": 12282.34414824455
+        },
+        {
+          "timestamp_utc": "2026-10-17T20:00:00+00:00",
+          "horizon_hours": 6,
+          "forecast_mw": 12773.0,
+          "actual_mw": 12824.05919338338
+        },
+        {
+          "timestamp_utc": "2026-10-17T21:00:00+00:00",
+          "horizon_hours": 7,
+          "forecast_mw": 13059.0,
+          "actual_mw": 13231.830651597065
+        },
+        {
+          "timestamp_utc": "2026-10-17T22:00:00+00:00",
+          "horizon_hours": 8,
+          "forecast_mw": 13239.0,
+          "actual_mw": 13374.702405781794
+        },
+        {
+          "timestamp_utc": "2026-10-17T23:00:00+00:00",
+          "horizon_hours": 9,
+          "forecast_mw": 13300.0,
+          "actual_mw": 13273.80999391445
+        },
+        {
+          "timestamp_utc": "2026-10-18T00:00:00+00:00",
+          "horizon_hours": 10,
+          "forecast_mw": 13239.0,
+          "actual_mw": 13074.996552860759
+        },
+        {
+          "timestamp_utc": "2026-10-18T01:00:00+00:00",
+          "horizon_hours": 11,
+          "forecast_mw": 13059.0,
+          "actual_mw": 12907.967124766239
+        },
+        {
+          "timestamp_utc": "2026-10-18T02:00:00+00:00",
+          "horizon_hours": 12,
+          "forecast_mw": 12773.0,
+          "actual_mw": 12773.79662563785
+        },
+        {
+          "timestamp_utc": "2026-10-18T03:00:00+00:00",
+          "horizon_hours": 13,
+          "forecast_mw": 12400.0,
+          "actual_mw": 12551.89371257185
+        },
+        {
+          "timestamp_utc": "2026-10-18T04:00:00+00:00",
+          "horizon_hours": 14,
+          "forecast_mw": 11966.0,
+          "actual_mw": 12129.340420661036
+        },
+        {
+          "timestamp_utc": "2026-10-18T05:00:00+00:00",
+          "horizon_hours": 15,
+          "forecast_mw": 11500.0,
+          "actual_mw": 11524.61269927741
+        },
+        {
+          "timestamp_utc": "2026-10-18T06:00:00+00:00",
+          "horizon_hours": 16,
+          "forecast_mw": 11034.0,
+          "actual_mw": 10897.256175685412
+        },
+        {
+          "timestamp_utc": "2026-10-18T07:00:00+00:00",
+          "horizon_hours": 17,
+          "forecast_mw": 10600.0,
+          "actual_mw": 10427.621293541792
+        },
+        {
+          "timestamp_utc": "2026-10-18T08:00:00+00:00",
+          "horizon_hours": 18,
+          "forecast_mw": 10227.0,
+          "actual_mw": 10177.470599150713
+        },
+        {
+          "timestamp_utc": "2026-10-18T09:00:00+00:00",
+          "horizon_hours": 19,
+          "forecast_mw": 9941.0,
+          "actual_mw": null
+        },
+        {
+          "timestamp_utc": "2026-10-18T10:00:00+00:00",
+          "horizon_hours": 20,
+          "forecast_mw": 9761.0,
+          "actual_mw": null
+        },
+        {
+          "timestamp_utc": "2026-10-18T11:00:00+00:00",
+          "horizon_hours": 21,
+          "forecast_mw": 9700.0,
+          "actual_mw": null
+        },
+        {
+          "timestamp_utc": "2026-10-18T12:00:00+00:00",
+          "horizon_hours": 22,
+          "forecast_mw": 9761.0,
+          "actual_mw": null
+        },
+        {
+          "timestamp_utc": "2026-10-18T13:00:00+00:00",
+          "horizon_hours": 23,
+          "forecast_mw": 9941.0,
+          "actual_mw": null
+        },
+        {
+          "timestamp_utc": "2026-10-18T14:00:00+00:00",
+          "horizon_hours": 24,
+          "forecast_mw": 10227.0,
+          "actual_mw": null
+        }
+      ],
+      "metrics": {
+        "hours": 18,
+        "mae_mw": 113.78496198718322,
+        "rmse_mw": 128.14451769403254,
+        "wape_percent": 0.9456868376386129
+      },
+      "status": "partial",
+      "scored_hours": 18,
+      "pending_hours": 6,
+      "scored_at_utc": null,
+      "model_sha256": "DEMO",
+      "image_uri": "DEMO"
+    }
+  ],
+  "pipelines": [
+    {
+      "name": "gridcast-ingestion",
+      "executions": [
+        {
+          "status": "SUCCEEDED",
+          "started_at_utc": "2026-10-18T14:00:00Z"
+        }
+      ]
+    },
+    {
+      "name": "gridcast-forecast",
+      "executions": [
+        {
+          "status": "SUCCEEDED",
+          "started_at_utc": "2026-10-18T14:30:00Z"
+        }
+      ]
+    }
+  ]
+}

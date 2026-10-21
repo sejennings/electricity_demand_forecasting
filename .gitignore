@@ -10,3 +10,5 @@ data/
 *.tfplan
 *.tfvars
 build/
+dashboard/snapshot.json
+dashboard/*.tmp
