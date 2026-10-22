@@ -29,9 +29,9 @@ function chart(rows){
   const values=rows.flatMap(r=>[r.forecast_mw,r.actual_mw]).filter(v=>v!=null), lo=Math.floor(Math.min(...values)*.9/100)*100, hi=Math.ceil(Math.max(...values)*1.06/100)*100;
   const x=i=>65+i*(right-65)/Math.max(1,rows.length-1), y=v=>235-(v-lo)/(hi-lo||1)*210;
   function el(tag,attrs,content){const n=document.createElementNS(ns,tag);for(const [k,v]of Object.entries(attrs))n.setAttribute(k,v);if(content!=null)n.textContent=content;svg.append(n);return n;}
-  for(let i=0;i<5;i++){const value=lo+(hi-lo)*i/4;el('line',{x1:65,x2:right,y1:y(value),y2:y(value),stroke:'#e7ece3','stroke-dasharray':'3 5'});el('text',{x:52,y:y(value)+4,'text-anchor':'end'},fmt(value));}
+  for(let i=0;i<5;i++){const value=lo+(hi-lo)*i/4;el('line',{x1:65,x2:right,y1:y(value),y2:y(value),stroke:'#2a3d57','stroke-dasharray':'3 5'});el('text',{x:52,y:y(value)+4,'text-anchor':'end'},fmt(value));}
   rows.forEach((r,i)=>{if(i%4===0||i===rows.length-1)el('text',{x:x(i),y:265,'text-anchor':'middle'},when(r.timestamp_utc,true));});
-  for(const [key,color] of [['forecast_mw','#167d68'],['actual_mw','#ce8350']]){
+  for(const [key,color] of [['forecast_mw','#ffce32'],['actual_mw','#61b9ff']]){
     let path='',gap=true;rows.forEach((r,i)=>{if(r[key]==null){gap=true;return;}path+=(gap?'M':'L')+x(i)+','+y(r[key])+' ';gap=false;});
     el('path',{d:path,fill:'none',stroke:color,'stroke-width':key==='forecast_mw'?3:2.5,'stroke-linejoin':'round'});
     rows.forEach((r,i)=>{if(r[key]!=null){const p=el('circle',{cx:x(i),cy:y(r[key]),r:3,fill:color});const t=document.createElementNS(ns,'title');t.textContent=when(r.timestamp_utc)+' · '+(key==='forecast_mw'?'Forecast':'Actual')+' '+fmt(r[key],1)+' MW';p.append(t);}});
