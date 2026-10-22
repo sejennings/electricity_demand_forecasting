@@ -2,6 +2,9 @@
 
 Local hourly demand and weather imports for an AWS forecasting platform.
 
+The [forecast operations dashboard](docs/dashboard.md) shows issued forecasts,
+observed demand, delayed scoring and pipeline health from a read-only AWS snapshot.
+
 ## Setup (PowerShell)
 
 Requires Python 3.11 or newer. From this folder:
