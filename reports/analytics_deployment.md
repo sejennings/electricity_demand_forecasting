@@ -44,6 +44,5 @@ Weather is historical reanalysis; the analytical feature view is not automatical
 future-weather input for forecasting. Plain Parquet object updates are individually atomic,
 not a transaction across all tables; run reporting extracts after pipeline success.
 
-The daily schedule remains enabled at 14:00 UTC. The existing $5 monthly project budget
-and failure notifications remain in place. Deployment and query instructions are in
+The daily schedule remains enabled
 `../sql/README.md`. Preserve the ignored Terraform state securely.
