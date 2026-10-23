@@ -79,4 +79,4 @@ def check_image_capacity(images, policy):
 
 if __name__ == '__main__':
     import sys
-    check_plan(json.loads(Path(sys.argv[1]).read_text()))
+    check_plan(json.loads(Path(sys.argv[1]).read_text(encoding='utf-8-sig')))

@@ -95,6 +95,7 @@ async function load() {
   $('reload').setAttribute('aria-busy', 'true');
   try {
     const demo = new URLSearchParams(location.search).get('demo') === '1';
+    $('sync').hidden = demo;
     const response = await fetch(demo ? 'demo.json' : 'snapshot.json', {cache:'no-store', signal:AbortSignal.timeout(10000)});
     if (!response.ok) throw new Error('No snapshot');
     const candidate = await response.json();
@@ -118,6 +119,29 @@ async function load() {
   }
 }
 
+async function syncFromAWS() {
+  if (loading || $('sync').disabled) return;
+  $('sync').disabled = true;
+  $('sync').setAttribute('aria-busy', 'true');
+  text('notice', 'Updating from AWS… This can take up to two minutes.');
+  try {
+    const response = await fetch('/api/refresh', {
+      method:'POST', headers:{'X-GridCast-Refresh':'1'}, signal:AbortSignal.timeout(130000)
+    });
+    if (!response.ok) {
+      const result = await response.json().catch(() => ({}));
+      throw new Error(result.error || 'AWS updates need the GridCast dashboard launcher.');
+    }
+    await load();
+  } catch (error) {
+    text('notice', (error.name === 'TimeoutError' ? 'AWS update timed out.' : error.message) + ' Showing the saved snapshot.');
+  } finally {
+    $('sync').disabled = false;
+    $('sync').removeAttribute('aria-busy');
+  }
+}
+
+$('sync').addEventListener('click', syncFromAWS);
 $('issue').addEventListener('change', render);
 $('zone').addEventListener('change', () => { if (data) renderOverview(); });
 $('reload').addEventListener('click', load);
