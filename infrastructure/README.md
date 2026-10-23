@@ -1,135 +1,49 @@
-# GridCast AWS data lake and ingestion
+# AWS infrastructure
 
-Terraform provisions the original project's first cloud milestone in **us-east-2**, using
-the `default` AWS CLI profile. No web server or always-running container is needed.
+GridCast uses Terraform in `us-east-2` with the `default` CLI profile.
 
-EventBridge Scheduler → Step Functions Standard → parallel demand/weather Lambda tasks
-→ validation and hourly demand/weather join → curated S3 CSV partitions.
+The daily ingestion job runs at **14:00 UTC**. It imports demand and historical
+weather, validates them, writes Parquet, and collects current operational inputs.
+The Fargate forecast job runs at **14:30 UTC**. Historical ERA5 data keeps a
+seven-day lag; live forecast weather follows its own retrieval time.
 
-The workflow also publishes Parquet during curation and then runs an Operational task
-to archive current weather forecasts and recent EIA demand. Recent actual demand updates
-the demand Parquet table independently of the historical weather lag. See
-[operational modeling](../docs/operational-model.md) for source timing and Docker commands.
+## Before changing a deployment
 
-## Data layout and behavior
-
-- `raw/<source>/region=DUK/year=.../month=.../day=.../run=<execution>/`: source JSON.
-- `processed/<source>/region=DUK/year=.../month=.../day=.../data.json`: validated hourly records.
-- `curated/hourly/region=DUK/year=.../month=.../day=.../data.csv`: aligned demand and historical weather.
-- `reports/`: source completeness and successful pipeline reports.
-- `raw/history/`, `processed/history/`, `reports/history/`: original local backfill snapshot.
-
-The daily run covers seven dates ending seven UTC days before execution, allowing ERA5
-publication time and replay of recent revisions. This is a historical research pipeline,
-not current-day forecasting. The model's assumed 24-hour demand delay does not change
-this historical weather publication constraint. Future forecast-weather ingestion remains
-necessary before deploying operational daily predictions.
-
-Each invocation is limited to seven days. Missing hours, duplicates, nulls, unexpected
-units and nonpositive demand fail validation. Raw downloaded evidence and completeness
-reports are saved before validation; incomplete source data is not published as processed
-or curated output. A failure can leave already validated processed source partitions,
-but no successful pipeline report is written until curation completes. Consumers should
-require a successful pipeline report for their requested interval. Current partition keys
-are deterministic, with S3 versioning retaining overwritten versions for 30 days.
-The source tasks retry twice; malformed/incomplete source data may remain failed until
-the provider corrects it. Resolve the issue and rerun that bounded interval.
-
-## Deploy and configure
-
-Install Terraform and Python dependencies, authenticate using `aws login --profile default`,
-and confirm the selected Region in AWS Settings → View all projects → Overview →
-Additional Info → Region (`us-east-2`). Run from the repository root:
+1. Sign in to AWS and confirm the Region in AWS Settings → Projects → Overview → Additional Info.
+2. Keep the existing ignored `infrastructure/terraform/terraform.tfvars`. Do not overwrite it with a partial example.
+3. Build the Lambda layer, then review a saved Terraform plan.
 
 ```powershell
-python -m pip install -e ".[aws,model,analytics]"
-python scripts/build_arrow_layer.py
+New-Item -ItemType Directory -Force .tools | Out-Null
+.venv/Scripts/python.exe scripts/build_arrow_layer.py
 terraform -chdir=infrastructure/terraform init -backend-config=backend.hcl
-# This local file is ignored by Git:
-'alert_email = "you@example.com"' | Set-Content infrastructure/terraform/terraform.tfvars
-terraform -chdir=infrastructure/terraform plan -out=deploy.tfplan
-terraform -chdir=infrastructure/terraform apply deploy.tfplan
-# Secure local prompt; never paste an API key into chat or Terraform:
-python scripts/set_eia_secret.py
-python scripts/seed_lake.py --bucket <lake_bucket_output>
-python scripts/run_cloud.py --end-date 2025-01-02 --days 1
+terraform -chdir=infrastructure/terraform plan -out=../../.tools/review.tfplan
+terraform -chdir=infrastructure/terraform show -json ../../.tools/review.tfplan | Set-Content -Encoding utf8 .tools/review.json
+.venv/Scripts/python.exe -m scripts.check_deployment_plan .tools/review.json
+.venv/Scripts/python.exe -m scripts.check_cost_controls .tools/review.json
 ```
 
-The fresh EIA key is stored only in Secrets Manager, outside Terraform state. The secret
-container exists after deployment but requires a value before demand ingestion works.
-Confirm the SNS email subscription in your inbox to receive pipeline-failure alerts.
-Only enable scheduling after a successful manual cloud run:
+Apply the reviewed saved plan only after both guards pass. State lives in the
+private S3 backend with locking and version history. Never commit state, plans,
+local settings or secrets. Never delete state to fix an apply failure.
 
-```powershell
-# Add schedule_enabled = true to the ignored terraform.tfvars, then review and apply:
-terraform -chdir=infrastructure/terraform plan -out=enable.tfplan
-terraform -chdir=infrastructure/terraform apply enable.tfplan
-```
+## Credentials and alerts
 
-Scheduler runs at 14:00 UTC daily. Its retry policy and encrypted SQS DLQ cover delivery
-to Step Functions; delivery success does not imply workflow success. CloudWatch alarms
-cover failed workflows and queued failed deliveries. Workflow ERROR logs exclude payload
-data; Lambda and workflow log groups retain 14 days. AWS-managed encryption protects
-logs and the secret. S3 uses SSE-S3 with public access blocked, ACLs disabled, TLS required,
-and versioning enabled. Execution roles are scoped to this pipeline's resources. The
-Step Functions and Scheduler role trusts have source-project/source-resource conditions.
+The EIA key belongs in Secrets Manager, outside Terraform. Use
+`scripts/set_eia_secret.py` for a secure local prompt when replacing it. Confirm
+the SNS email subscription to receive failure alerts.
 
-## Costs and lifecycle
+A $5 budget sends early warnings; the operating target is $10/month before credits.
+Neither is a guaranteed spending cap. Review spend in AWS Settings → Billing.
+The lake blocks public access and keeps old object versions for 30 days.
 
-A $5 monthly budget covers the AWS project, excluding credits/refunds so credits do not
-mask gross consumption. Alerts trigger above 80% actual or 100% forecast usage. This is
-an alert, not a spending cap. Budget monitoring can lag actual usage. Review AWS Settings
-→ Billing for your plan's credits and spending controls.
+## Operations
 
-Charges can accrue for storage, S3 requests, Secrets Manager, workflow transitions,
-Lambda, alarms, logs and notifications. No NAT Gateway, provisioned concurrency or
-dedicated compute is configured. See current [S3](https://aws.amazon.com/s3/pricing/),
-[Lambda](https://aws.amazon.com/lambda/pricing/),
-[Step Functions](https://aws.amazon.com/step-functions/pricing/), and
-[Secrets Manager](https://aws.amazon.com/secrets-manager/pricing/) pricing.
+- Pause future jobs through `schedule_enabled` and `forecast_schedule_enabled`, then review and apply the change.
+- Missing or invalid source data fails validation. Fix the source problem and rerun a bounded interval; do not fill values to force success.
+- Keep the lake's deletion protection in place. Existing forecasts and score revisions are retained.
 
-For expanded auditing, enable S3 access logging, targeted CloudTrail S3 data events and
-request metrics after reviewing their additional request/storage/event costs. Customer-managed
-KMS encryption for logs and the alert topic can be added if stronger key control is needed.
-Alert messages contain workflow metadata, not API keys or source payloads.
-
-State and plans are local and ignored. Back up `terraform.tfstate` securely; never delete
-it to troubleshoot a failed apply. The provider lockfile is committed for reproducibility.
-The lake has Terraform deletion protection and `force_destroy=false`. To pause costs,
-disable scheduling through Terraform. Destruction requires deliberate removal of the
-lake protection and handling all stored versions; do not run destructive cleanup blindly.
-The Parquet, Glue and Athena layer is deployed alongside ingestion. See
-[SQL analytics instructions](../sql/README.md) for schemas, historical conversion and queries.
-
-## Validate
-
-```powershell
-python -m unittest discover -s tests -v
-terraform -chdir=infrastructure/terraform fmt -check
-terraform -chdir=infrastructure/terraform validate
-```
-
-The Autopilot-generated IAM baseline is tracked as `lambda-policy.generated.json`.
-Terraform narrows its S3 actions/resources and secret ARN, omits unused KMS/ACL/Object
-Lambda actions, and adds runtime log-write permissions. Regenerate the baseline with:
-
-```powershell
-uvx --python .venv/Scripts/python.exe iam-policy-autopilot@latest generate-policies src/gridcast/cloud.py src/gridcast/analytics.py --region us-east-2 --account <project_aws_id> --service-hints s3 secretsmanager --pretty
-```
-# Daily Fargate forecasting
-
-See [GitHub Actions deployment](../docs/github-actions-deployment.md) for the shared
-state backend, bootstrap resources, CI checks and current AWS OIDC prerequisite.
-
-`forecasting.tf` adds the ECR repository, task roles, dedicated subnet, Fargate
-task, Step Functions completion monitoring and daily forecast schedule. See
-[deployment and scoring operations](../docs/scheduled-forecasts.md).
-
-Set `forecast_model_sha256` in ignored `terraform.tfvars` to the trained model's
-SHA-256. Upload that trusted artifact to `models/weather/<hash>.joblib` in the
-lake. Initially leave `forecast_schedule_enabled=false`; create the repository,
-push an immutable image tag and set `forecast_image_digest` to the returned
-`sha256:...` digest. Apply, run a manual workflow, then enable the schedule.
-The job verifies the model hash before loading it. No datasets or credentials
-belong in the Docker build context or Terraform inputs.
-
+[Daily forecasts and scoring](../docs/scheduled-forecasts.md) ·
+[GitHub deployment](../docs/github-actions-deployment.md) ·
+[SQL analytics](../sql/README.md) ·
+[Cost assumptions](../docs/cost-audit-2026-10-18.md)

@@ -1,49 +1,50 @@
-# Forecast operations dashboard
+# Using the dashboard
 
-A dependency-free static dashboard with read-only exports from the existing AWS
-lake and Step Functions workflows. It creates no hosting resources, runs no
-Athena queries and requires no API keys or AWS credentials in the browser.
-
-From the repository root in PowerShell:
+Start it from the project folder:
 
 ```powershell
-# Requires the existing AWS optional dependencies and a valid default CLI session.
-.venv/Scripts/python.exe -m scripts.export_dashboard
 .venv/Scripts/python.exe -m scripts.serve_dashboard
 ```
 
-Open [the local dashboard](http://127.0.0.1:8870/). The export displays at most 30
-issues by default (`--limit 1` through `100`), sorts by actual issue time and
-atomically replaces the ignored `dashboard/snapshot.json`. It lists and reads all
-forecast manifests to discover issues by actual issue time, then reads the latest
-score revisions for the selected issues. Discovery stops before downloading
-manifests if the archive exceeds 500 issues; review its size before increasing
-`--max-manifests`. Consequently exports still incur small S3 request
-charges; repeatedly exporting a large archive increases request usage. It reads
-five recent executions per pipeline. No cloud state or forecasts are modified.
+Open [localhost:8870](http://127.0.0.1:8870/). Add `--port 8871` if that port is busy.
+Stop the server with Ctrl+C.
 
-The browser reads only that snapshot. **Refresh view reloads the local snapshot;
-it does not export new AWS data.** Run the export command again for current data.
-Snapshot time and stale snapshots are shown. Refresh preserves the selected issue,
-and timezone changes re-render the loaded data without fetching it again. A failed
-or malformed refresh retains the last valid view with an explicit warning.
-Exports reject invalid or mismatched forecast/actual records; interrupted writes
-leave the previous snapshot intact.
+## Refreshing data
 
-The launcher serves only known dashboard assets, binds to loopback and disables
-HTTP caching. It works from any current directory and accepts `--port 8871` if
-the default port is occupied. Stop it with Ctrl+C. It does not refresh AWS data.
+**Update from AWS** fetches current forecasts, scores and job status. It needs a
+valid AWS CLI session and may take up to two minutes. Updates happen only when
+you ask; there is no background polling. Wait a minute between updates.
 
-Features: issue selection, UTC/Eastern display, forecast/actual chart, pending
-actual gaps, per-issue WAPE and MAE, scoring coverage, hourly values, CSV download,
-recent pipeline status and forecast provenance. WAPE is computed only on scored
-hours of the selected issue. Early prospective metrics are not multi-season
-model evaluations. Separate issues are never silently combined.
+**Reload saved view** just rereads `dashboard/snapshot.json`. It does not contact
+AWS. That is why reloading an old snapshot does not make its timestamp newer.
 
-If no export exists, the page offers [demo mode](http://127.0.0.1:8870/?demo=1).
-Demo data is synthetic, explicitly labeled and never automatically substituted
-for missing real data. Production snapshots and downloaded datasets are ignored
-by Git. No external JavaScript, font CDN or analytics calls are used.
+If your AWS session has expired, sign in again and retry. You can also export from
+a terminal:
 
-This first version is local. Public AWS hosting and automated snapshot updates
-can be added later after reviewing costs and access requirements.
+```powershell
+.venv/Scripts/python.exe -m scripts.export_dashboard
+```
+
+An update failure keeps the last saved snapshot. The page warns when data is old
+or a refresh fails, rather than quietly replacing it with demo data.
+
+## Reading the results
+
+Choose a forecast issue and UTC or Eastern time. The chart compares its original
+predictions with available actual demand. WAPE and MAE cover **scored hours only**;
+pending hours are not treated as zero. CSV download includes the selected issue.
+
+The pipeline panel shows recent jobs, including failures. A fresh snapshot can
+still contain an older forecast if newer forecast jobs failed.
+
+[Demo mode](http://127.0.0.1:8870/?demo=1) uses clearly labeled synthetic data.
+
+## Local access and export limits
+
+The server binds to your computer, serves only dashboard files, and accepts AWS
+update requests only from its own page. AWS credentials stay in the local CLI
+session, never in browser code. No cloud resources are created.
+
+Exports keep the newest 30 issues by default. Use `--limit` for 1–100 issues.
+Discovery stops above 500 manifests; review archive size before raising
+`--max-manifests`. Requests have small AWS usage costs. Snapshots are ignored by Git.

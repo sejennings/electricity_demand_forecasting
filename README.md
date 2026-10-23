@@ -1,241 +1,75 @@
-# GridCast: electricity demand forecasting
+# GridCast
 
-Local hourly demand and weather imports for an AWS forecasting platform.
+GridCast forecasts hourly electricity demand for Duke Energy Carolinas. It combines
+EIA demand data with weather forecasts, saves each forecast, and scores it when
+actual demand arrives.
 
-The [forecast operations dashboard](docs/dashboard.md) shows issued forecasts,
-observed demand, delayed scoring and pipeline health from a read-only AWS snapshot.
+## Open the dashboard
 
-## Project quick start
+From the project folder in PowerShell:
 
 ```powershell
-# Install the package and existing pinned dependencies in the local environment.
-.venv/Scripts/python.exe -m pip install -r requirements-model-lock.txt -r requirements-runtime-lock.txt
-.venv/Scripts/python.exe -m pip install --no-deps -e .
-# Use an existing snapshot, or add ?demo=1 for explicitly synthetic demo data.
 .venv/Scripts/python.exe -m scripts.serve_dashboard
-# In a second terminal, refresh real data after AWS CLI sign-in:
-.venv/Scripts/python.exe -m scripts.export_dashboard
 ```
 
-Run `.venv/Scripts/python.exe -m unittest discover -s tests -v` for regression
-checks. The local dashboard adds no AWS hosting. Exports use read-only API calls.
-The operating target is **$10/month before credits**; controls reduce usage but
-are not a guaranteed billing cap. See the [cost audit](docs/cost-audit-2026-10-18.md).
+Open [localhost:8870](http://127.0.0.1:8870/). Use **Update from AWS** for fresh data
+or **Reload saved view** to reread the existing snapshot. AWS updates need a valid
+CLI sign-in. Use `--port 8871` if port 8870 is occupied.
 
-## Setup (PowerShell)
+[Dashboard guide](docs/dashboard.md) · [Demo](http://127.0.0.1:8870/?demo=1)
 
-Requires Python 3.11 or newer. From this folder:
+## First-time setup
+
+Requires Python 3.11+; the pinned experiments use Python 3.12.
 
 ```powershell
 python -m venv .venv
-.\.venv\Scripts\Activate.ps1
-python -m pip install -e .
-$env:EIA_API_KEY = "your-eia-key"
-gridcast-import --start 2025-01-01 --end 2025-01-07
+.venv/Scripts/python.exe -m pip install -r requirements-model-lock.txt -r requirements-runtime-lock.txt
+.venv/Scripts/python.exe -m pip install --no-deps -e .
 ```
 
-Register for a [free EIA API key](https://www.eia.gov/opendata/register.php).
-Keys are read from the environment; `.env` files are not loaded automatically.
-Default scope is Duke Energy Carolinas (`DUK`) with Charlotte weather
-(35.2271, -80.8431). This single point is a starting proxy, not a regional average.
-Override using `--region`, `--latitude`, and `--longitude`.
+For a snapshot without starting the dashboard:
 
 ```powershell
-# Weather needs no key:
-gridcast-import --source weather --start 2025-01-01 --end 2025-01-07
-# Historical backfill:
-gridcast-import --start 2021-01-01 --end 2025-12-31
-# Refetch corrected or recently published source records:
-gridcast-import --start 2025-01-01 --end 2025-01-07 --refresh
+.venv/Scripts/python.exe -m scripts.export_dashboard
 ```
 
-Dates are inclusive UTC dates. Monthly requests, EIA pagination, transient-error retries,
-and cached successful pages support restartable backfills.
+## How it works
 
-## Outputs
+- **Import:** Lambda collects demand and weather, then saves validated Parquet in S3.
+- **Forecast:** a daily Fargate task produces the next 24 hourly predictions.
+- **Score:** later imports add actual demand and update scores without changing the original forecast.
+- **Explore:** Glue and Athena support SQL analysis; the dashboard shows individual forecasts and pipeline status.
 
-Outputs are ignored by Git; change the root with `--output`:
+Historical weather and live forecast weather stay separate. Missing demand is
+never invented. A forecast fails if its required history is unavailable.
 
-- `data/raw/eia/<region>/`: source responses, excluding credential-bearing request metadata.
-- `data/raw/weather/<latitude>_<longitude>/`: source responses and units.
-- `data/processed/demand/<region>/`: CSV with `timestamp_utc`, `region`, `demand_mw`.
-- `data/processed/weather/<latitude>_<longitude>/`: CSV with UTC timestamps, coordinates,
-  source, temperature (°C), humidity (%), precipitation (mm), and wind (m/s).
-- `data/reports/`: requested scope, import time, row counts, missing hours, null counts.
+## Project guides
 
-CSV files use requested start/end dates in their names. The same request replaces its
-processed file atomically; overlapping requests create separate files. Deduplicate keys
-before concatenating overlapping ranges. Join demand and weather on `timestamp_utc`.
-Missing hours/nulls are reported without filling. Duplicate/out-of-range timestamps and
-unexpected units fail imports. Review reports and raw anomalies before training.
-EIA energy in megawatthours over one-hour intervals is numerically equal to average MW.
+| Task | Guide |
+|---|---|
+| Import data or reproduce model experiments | [Data and models](docs/data-and-models.md) |
+| Understand live inputs and Docker commands | [Operational model](docs/operational-model.md) |
+| Train with archived weather forecasts | [Weather-vintage training](docs/weather-vintage-training.md) |
+| Manage daily jobs and scores | [Scheduled forecasts](docs/scheduled-forecasts.md) |
+| Review Terraform changes | [Infrastructure](infrastructure/README.md) |
+| Configure GitHub deployment | [GitHub Actions](docs/github-actions-deployment.md) |
+| Query the lake | [SQL analytics](sql/README.md) |
 
-## Data sources and limits
+Results and dated deployment evidence are in [reports](reports/). They describe
+past runs, not a guarantee of current accuracy or pipeline health.
 
-[EIA API v2](https://www.eia.gov/opendata/documentation.php) supplies actual demand (`D`).
-[Open-Meteo historical weather](https://open-meteo.com/en/docs/historical-weather-api)
-supplies ERA5 gridded reanalysis, explicitly selected for consistency.
-Weather attribution: Open-Meteo / Copernicus ERA5. Consult provider documentation for
-licensing, attribution, rate limits, and commercial-use terms.
-
-Historical reanalysis is suitable for exploration, but is **not forecast-time weather**.
-Do not use future reanalysis values as known inputs in realistic forecasting backtests.
-Historical weather forecasts, NOAA station imports and multi-point weather aggregation
-remain future steps. Parquet and the AWS data lake are implemented below.
-
-## Tests
+## Checks and costs
 
 ```powershell
-python -m pip install -e ".[model,analytics]"
-python -m unittest discover -s tests -v
+.venv/Scripts/python.exe -m unittest discover -s tests -v
+node --check dashboard/app.js
 ```
 
-Offline tests cover UTC alignment, date windows, duplicate rejection, missing-hour
-reporting, credential-safe caching and pagination. Live demand imports require an EIA key.
+The usage target is **$10/month before credits**. The local dashboard adds no
+hosting bill; AWS updates make read-only API requests. Budget alerts and usage
+checks reduce risk but do not guarantee a maximum bill. See the
+[cost audit](docs/cost-audit-2026-10-18.md).
 
-## Baseline forecasting
-
-Reinstall with `python -m pip install -e .` to register `gridcast-baseline`.
-Four demand-only baselines produce hourly forecasts for the next 24 hours:
-persistence, daily seasonal naive, weekly seasonal naive, and their daily/weekly mean.
-No training dependencies or weather inputs are required.
-
-```powershell
-gridcast-baseline evaluate --start 2025-01-08T00:00:00Z --end 2025-01-31T00:00:00Z
-gridcast-baseline forecast --issue 2025-02-01T00:00:00Z
-# Sensitivity to delayed observations, with separate results:
-gridcast-baseline evaluate --start 2025-01-09T00:00:00Z --end 2025-01-31T00:00:00Z --availability-delay-hours 24 --output data/models/baselines-delay24
-```
-
-Use `--input` for a demand CSV or directory, `--region` for the balancing authority,
-and `--output` for results. Directory inputs combine CSVs, deduplicate identical records,
-and reject conflicting overlaps. Defaults read `data/processed/demand/DUK`.
-
-Evaluation issues forecasts at midnight UTC each day, with 24 targets beginning at
-that midnight. Issue bounds are inclusive. Horizons 1–24 label the first through last
-target hour. Observations must be strictly before issue time minus the configured
-availability delay. Seasonal lags repeat backward until before that cutoff; missing
-source hours are never replaced with future observations. Persistence uses the hour
-immediately before the cutoff. These baselines use UTC seasons, not local-time seasons.
-
-All four models are evaluated on identical complete daily windows. Incomplete days
-are excluded and counted. `metrics.json` reports MAE, RMSE, WAPE, and MAE at each day's
-actual peak hour. WAPE is null when total actual demand is zero. Per-hour issued forecasts
-and actuals are saved in `backtest_predictions.csv`. Future forecasts use separate CSVs
-named by region and issue time. Evaluation outputs overwrite prior results in the same
-output directory; use separate directories for experiments.
-
-The default zero-hour delay is an optimistic assumption. Historical EIA values can be
-revised; this is a retrospective comparison, not a reconstruction of data publication.
-Use delay sensitivity runs and verify actual source availability before scheduling forecasts.
-At least seven days of prior history are needed, plus the evaluation interval (more with delay).
-
-Initial DUK comparison: January 8–31, 2025, 576 hours across 24 complete days:
-
-| Model | MAE (MW) | RMSE (MW) | WAPE |
-| --- | ---: | ---: | ---: |
-| Persistence | 1,476.82 | 1,849.44 | 9.71% |
-| Daily naive | 1,306.77 | 1,704.88 | 8.59% |
-| Weekly naive | 3,142.86 | 3,725.60 | 20.67% |
-| Daily/weekly mean | 1,872.95 | 2,251.81 | 12.32% |
-
-This single winter month verifies the workflow; it is not evidence of year-round performance.
-
-## When to set up AWS
-
-Continue locally until a multi-season backfill passes data-quality review and baseline
-evaluation runs reproducibly. Then set up the AWS account/project environment and budget
-alert before deploying the first storage and scheduled-ingestion milestone. Model evaluation
-does not require AWS. Infrastructure provisioning, account configuration, and deployment
-are not part of the baseline implementation.
-
-## Historical backfill and gradient boosting
-
-The five-year backfill and 2024–2025 evaluation are complete. See
-[historical evaluation](reports/historical_evaluation.md) for coverage, seasonal results,
-assumptions and limitations. With an assumed 24-hour reporting delay, the 2025 model
-achieved 8.28% WAPE versus 10.03% for the strongest baseline.
-
-```powershell
-python -m pip install -e ".[model]"
-# Optional: reproduce the experiment's exact dependency versions (Python 3.12):
-python -m pip install -r requirements-model-lock.txt
-# Official EIA bulk demand plus monthly historical weather (no API key needed):
-python -m gridcast.backfill
-# Monthly expanding refits, shared baseline comparison, seasonal metrics:
-python -m gridcast.research
-# Demonstrate future inference from the final trained artifact:
-python -m gridcast.forecast_model --issue 2026-01-01T00:00:00Z
-```
-
-The EIA bulk download is approximately 697 MB, cached under `data/raw/eia/`.
-Only the requested DUK series is extracted; reruns reuse its cached JSON. To obtain a
-fresh snapshot, archive the cached series and ZIP elsewhere before rerunning.
-Backfill uses fixed DUK/Charlotte geography and 2021–2025 dates. The model experiment
-uses 2021–2023 initial history, 2024 validation and 2025 chronological evaluation;
-model parameters are fixed. Historical data may be revised after the initial download.
-
-`data/models/research/` contains per-hour evaluation predictions, metrics, the final
-`model.joblib`, and issued forecasts. Only load trusted model artifacts. The final model
-is separately refit after evaluation using labels before 2025-12-31 UTC. It cannot be
-used for earlier issue dates; the forecast command checks the training cutoff. The sample
-January 2026 forecast is a workflow demonstration, not a forecast for today's date.
-For current forecasts, extend demand ingestion through the required availability cutoff.
-
-Compact results are tracked in `reports/`; raw data, CSV predictions and model binaries
-remain ignored. The backfill found one missing demand hour; affected evaluation days
-are excluded, never interpolated. Forecast-time weather and weather-vintage training
-are now implemented separately from this historical benchmark.
-
-AWS storage, scheduled ingestion, analytics and container forecasting are deployed.
-Training can continue locally; scheduled containers perform inference and scoring.
-
-## AWS data lake
-
-The first AWS milestone is deployed with Terraform infrastructure and Lambda ingestion code.
-See the [deployment status](reports/aws_deployment.md) for verified checks.
-See [infrastructure instructions](infrastructure/README.md) for deployment, secure EIA
-key setup, cloud smoke tests, scheduling, alerts and cost controls. Infrastructure targets
-`us-east-2` with the `default` profile. The schedule defaults to disabled until a successful
-manual run verifies both sources; the deployed schedule is now enabled.
-
-## Parquet, Glue and Athena
-
-The `gridcast` Glue database contains three hourly Parquet tables and region/calendar
-dimensions. The `gridcast-analytics` Athena workgroup has five reporting views and saved
-queries for daily peaks, seasonality, weather relationships and completeness.
-
-The 2021–2025 history contains 43,823 demand/joined hours and 43,824 weather hours.
-The known missing demand hour remains visible in the completeness report. Seven days
-of cloud-imported October 2026 data are also queryable. The daily pipeline updates monthly
-Parquet partitions without discarding prior hours. Live Athena queries and a seven-day
-workflow run verified row counts, uniqueness, null checks and incremental preservation.
-
-See [SQL analytics instructions](sql/README.md) and
-[analytics validation](reports/analytics_deployment.md) for schemas, commands and evidence.
-
-## Live inputs and Docker modeling
-
-Current GFS weather forecasts and recent EIA demand are archived as immutable,
-collection-time snapshots. The existing daily workflow now collects these operational
-inputs after historical curation, and updates actual-demand Parquet through the latest
-available completed hour. Historical ERA5 weather keeps its existing publication lag.
-
-`gridcast.jobs` provides separate `import-live`, `train` and `forecast` commands.
-The non-root Docker image pins its base and runtime dependencies. Training and inference
-have both been verified in Docker; inference produces 24 future hourly predictions with
-networking disabled. Optional `train --weather-vintages` learns from archived GFS runs,
-with timing guards and a shared weather feature schema for inference. See
-[weather-vintage training](docs/weather-vintage-training.md) for backfill, paired monthly
-evaluation, availability assumptions and Docker commands.
-
-See [operational modeling instructions](docs/operational-model.md) for tested Docker
-commands, snapshot timing, training cutoffs and limitations. Validation evidence is in
-[operational/container validation](reports/operational_container_validation.json).
-Daily Fargate forecasting and delayed actual-demand scoring are configured with
-Terraform. See [scheduled forecasts](docs/scheduled-forecasts.md) for the 14:30 UTC
-schedule, immutable issue records, score revisions, operations and open image findings.
-
-GitHub Actions runs credential-free checks and provides a guarded Terraform/ECR
-deployment workflow using shared S3 state and OIDC. AWS deployment is disabled
-pending the managed IAM-provider restriction; see [CI/CD setup](docs/github-actions-deployment.md).
+Keep credentials, downloaded data, model binaries, Terraform state and plans out
+of Git. AWS resources belong in `us-east-2`.

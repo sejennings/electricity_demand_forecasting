@@ -6,6 +6,36 @@ from scripts.export_dashboard import build_run, export, write_snapshot
 
 
 class DashboardTests(unittest.TestCase):
+    def test_aws_refresh_requires_same_origin_and_is_rate_limited(self):
+        import threading
+        from functools import partial
+        from urllib.error import HTTPError
+        from urllib.request import Request, urlopen
+        from unittest.mock import patch
+        from scripts.serve_dashboard import DashboardHandler, DashboardServer, ROOT
+        class QuietHandler(DashboardHandler):
+            def log_message(self, *args):
+                pass
+        with DashboardServer(('127.0.0.1',0),partial(QuietHandler,directory=str(ROOT))) as server:
+            thread=threading.Thread(target=server.serve_forever,daemon=True)
+            thread.start()
+            url=f'http://127.0.0.1:{server.server_port}'
+            try:
+                with patch('scripts.serve_dashboard.refresh_snapshot') as refresh:
+                    request=Request(url+'/api/refresh',data=b'',headers={'Origin':'https://unrelated.example','X-GridCast-Refresh':'1'})
+                    with self.assertRaises(HTTPError) as error: urlopen(request,timeout=5)
+                    self.assertEqual(error.exception.code,403)
+                    refresh.assert_not_called()
+                    request=Request(url+'/api/refresh',data=b'',headers={'Origin':url,'X-GridCast-Refresh':'1'})
+                    with urlopen(request,timeout=5) as response:self.assertEqual(response.status,200)
+                    refresh.assert_called_once()
+                    with self.assertRaises(HTTPError) as error:urlopen(request,timeout=5)
+                    self.assertEqual(error.exception.code,429)
+                    refresh.assert_called_once()
+            finally:
+                server.shutdown()
+                thread.join(timeout=5)
+
     def test_local_server_exposes_only_known_assets(self):
         import tempfile
         import threading

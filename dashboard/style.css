@@ -26,8 +26,8 @@ h2 { font: 650 23px/1.2 "Bahnschrift", "Arial", sans-serif; letter-spacing: -.6p
 .muted { color: var(--muted); font-size: 12px; }
 button, select { border: 1px solid #395071; border-radius: 3px; background: #12243e; color: var(--ink); padding: 11px 14px; font: 12px "Bahnschrift", "Arial", sans-serif; cursor: pointer; }
 button:hover { border-color: var(--yellow); background: #203552; }
-#reload { background: var(--yellow); color: #111e34; border-color: var(--yellow); font-weight: 750; }
-#reload:hover { background: #ffdf70; }
+#sync { background: var(--yellow); color: #111e34; border-color: var(--yellow); font-weight: 750; }
+#sync:hover { background: #ffdf70; }
 button:focus-visible, select:focus-visible, summary:focus-visible { outline: 3px solid var(--yellow); outline-offset: 3px; }
 #notice { border: 1px solid #514627; border-left: 3px solid var(--yellow); padding: 12px 16px; background: #211f1a; color: #ecda9e; margin-bottom: 24px; font-size: 12px; }
 a { color: var(--yellow); }
@@ -78,3 +78,7 @@ footer span:last-child { margin-left: auto; font-family: var(--mono); font-size:
 @media(min-width:1100px) { .intro { padding-top: 12px; padding-bottom: 12px; } .cards { margin-top: 28px; } }
 @media(max-width:850px) { .cards { grid-template-columns: repeat(2,1fr); } .lower { grid-template-columns: 1fr; } .brand small { display: none; } .toolbar { flex-wrap: wrap; } #updated { margin-left: 0; width: 100%; } .panel-head { flex-wrap: wrap; } .intro { align-items: start; } main { padding-top: 26px; } footer { flex-wrap: wrap; } footer span:last-child { margin-left: 0; } }
 @media(max-width:480px) { .cards article { padding: 16px; } .cards strong { font-size: 27px; } .region { font-size: 9px; } .intro { padding-left: 14px; } .intro button { max-width: 95px; } .panel { padding: 18px; } .toolbar { gap: 12px; } .toolbar select { min-width: 140px; } }
+
+.refresh-actions { display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end; }
+button:disabled { opacity:.55; cursor:wait; }
+@media(max-width:480px) { .refresh-actions { max-width:110px; } .intro .refresh-actions button { width:110px; max-width:110px; padding:9px; font-size:11px; } }

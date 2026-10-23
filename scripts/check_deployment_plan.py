@@ -36,7 +36,7 @@ def check(plan):
 
 
 def main():
-    check(json.loads(Path(sys.argv[1]).read_text()))
+    check(json.loads(Path(sys.argv[1]).read_text(encoding='utf-8-sig')))
 
 
 if __name__=='__main__':
