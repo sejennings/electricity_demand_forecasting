@@ -31,14 +31,17 @@ def check_plan(plan, policy=None):
             if actual != limit:
                 raise ValueError(f'Cost control changed or unknown: {address}.{field}')
         if 'workflow_limits' in rule:
+            source = rule.get('definition_source')
+            if source:
+                path = POLICY.parents[1] / source['path']
+                if not path.is_file() or hashlib.sha256(path.read_text().encode()).hexdigest() != source.get('sha256'):
+                    raise ValueError(f'Workflow requires audited source: {address}')
             raw_definition = values.get('definition')
             if raw_definition is None:
                 # A new pinned ECS revision makes jsonencode unknown at plan time.
                 # Accept only the exact audited HCL, with no variable-driven cost
                 # settings, and verify the existing definition's limits as well.
-                source = rule.get('definition_source', {})
-                path = POLICY.parents[1] / source.get('path', '')
-                if not path.is_file() or hashlib.sha256(path.read_text().encode()).hexdigest() != source.get('sha256'):
+                if not source:
                     raise ValueError(f'Unknown workflow definition requires audited source: {address}')
                 change = next((r['change'] for r in plan.get('resource_changes', []) if r['address'] == address), {})
                 if change.get('after_unknown', {}).get('definition') is not True:

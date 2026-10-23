@@ -5,6 +5,23 @@ Local hourly demand and weather imports for an AWS forecasting platform.
 The [forecast operations dashboard](docs/dashboard.md) shows issued forecasts,
 observed demand, delayed scoring and pipeline health from a read-only AWS snapshot.
 
+## Project quick start
+
+```powershell
+# Install the package and existing pinned dependencies in the local environment.
+.venv/Scripts/python.exe -m pip install -r requirements-model-lock.txt -r requirements-runtime-lock.txt
+.venv/Scripts/python.exe -m pip install --no-deps -e .
+# Use an existing snapshot, or add ?demo=1 for explicitly synthetic demo data.
+.venv/Scripts/python.exe -m scripts.serve_dashboard
+# In a second terminal, refresh real data after AWS CLI sign-in:
+.venv/Scripts/python.exe -m scripts.export_dashboard
+```
+
+Run `.venv/Scripts/python.exe -m unittest discover -s tests -v` for regression
+checks. The local dashboard adds no AWS hosting. Exports use read-only API calls.
+The operating target is **$10/month before credits**; controls reduce usage but
+are not a guaranteed billing cap. See the [cost audit](docs/cost-audit-2026-10-18.md).
+
 ## Setup (PowerShell)
 
 Requires Python 3.11 or newer. From this folder:
@@ -167,10 +184,11 @@ For current forecasts, extend demand ingestion through the required availability
 
 Compact results are tracked in `reports/`; raw data, CSV predictions and model binaries
 remain ignored. The backfill found one missing demand hour; affected evaluation days
-are excluded, never interpolated. Forecast-time weather is still a separate future task.
+are excluded, never interpolated. Forecast-time weather and weather-vintage training
+are now implemented separately from this historical benchmark.
 
-AWS storage, scheduled ingestion and the analytics layer are now deployed. Model
-training can continue locally until the container deployment milestone.
+AWS storage, scheduled ingestion, analytics and container forecasting are deployed.
+Training can continue locally; scheduled containers perform inference and scoring.
 
 ## AWS data lake
 

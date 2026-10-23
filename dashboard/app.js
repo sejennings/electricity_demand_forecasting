@@ -1,5 +1,5 @@
 const $ = id => document.getElementById(id);
-let data, selected;
+let data, selected, loading = false;
 const fmt = (v, digits=0) => v == null ? '—' : Number(v).toLocaleString('en-US',{maximumFractionDigits:digits});
 const when = (value, compact=false) => new Intl.DateTimeFormat('en-US',{timeZone:$('zone').value,month:'short',day:'numeric',hour:'2-digit',minute:compact?undefined:'2-digit',hour12:false}).format(new Date(value));
 function text(id,value){$(id).textContent=value;}
@@ -11,7 +11,7 @@ function render(){
   text('peak',fmt(peak.forecast_mw)+' MW');text('peakTime',when(peak.timestamp_utc)+' · '+$('zone').value);
   text('wape',r.metrics.wape_percent==null?'—':fmt(r.metrics.wape_percent,2)+'%');
   text('mae',fmt(r.metrics.mae_mw,1));text('coverage',r.scored_hours+' / '+r.rows.length);
-  text('scoreStatus',r.status==='complete'?'All actuals available':r.pending_hours+' hours awaiting actuals');
+  text('scoreStatus',r.status==='complete'?'All actuals available':r.pending_hours+' '+(r.pending_hours===1?'hour':'hours')+' awaiting actuals');
   text('issueMeta','Issued '+when(r.issue_time_utc)+' · '+$('zone').value+' · '+r.status+' scoring');
   $('hours').replaceChildren(...r.rows.map(row=>{
     const tr=node('tr');[when(row.timestamp_utc),fmt(row.forecast_mw,1),row.actual_mw==null?'Pending':fmt(row.actual_mw,1),row.actual_mw==null?'—':fmt(row.forecast_mw-row.actual_mw,1)].forEach((v,i)=>tr.append(node('td',v,row.actual_mw==null&&i>1?'pending':'')));return tr;
@@ -38,34 +38,93 @@ function chart(rows){
   }
   $('chart').replaceChildren(svg);
 }
-async function load(){
-  try{
-    const demo=new URLSearchParams(location.search).get('demo')==='1';
-    const response=await fetch(demo?'demo.json':'snapshot.json',{cache:'no-store'});
-    if(!response.ok)throw new Error('No snapshot');
-    data=await response.json();
-    if(!data.runs?.length)throw new Error('No forecast issues available');
-    data.runs.sort((a,b)=>Date.parse(b.issue_time_utc)-Date.parse(a.issue_time_utc));
-    $('issue').replaceChildren(...data.runs.map(r=>{const o=node('option',when(r.issue_time_utc)+' · '+r.status);o.value=r.id;return o;}));
-    const age=(Date.now()-Date.parse(data.generated_at_utc))/3600000;
-    const expired=Date.parse(data.runs[0].origin_utc)+24*3600000<Date.now();
-    text('notice',data.demo?'DEMO DATA · Illustrative values only. This is not GridCast production performance.':`Stored AWS snapshot · ${age>24?'Snapshot is more than 24 hours old. ':''}${expired?'The latest available forecast horizon has ended. ':''}Accuracy includes observed hours only; missing actuals stay pending.`);
-    text('updated','Snapshot: '+when(data.generated_at_utc)+' '+$('zone').value);
-    $('pipelines').replaceChildren(...data.pipelines.map(p=>{
-      const item=node('div',null,'pipeline'), latest=p.executions[0];item.append(node('strong',p.name.replace('gridcast-','')==='ingestion'?'Demand & weather imports':'Daily forecast'));
-      item.append(node('span',latest?.status||'UNKNOWN','badge'+(latest?.status==='SUCCEEDED'?'':' bad')));
-      item.append(node('small',latest?when(latest.started_at_utc)+' '+$('zone').value:'No executions recorded'));
-      item.append(node('small',p.executions.map(e=>e.status==='SUCCEEDED'?'✓':e.status==='FAILED'?'×':'·').join('  ')+'  Recent executions, newest first'));return item;
-    }));render();
-  }catch(error){
-    if(selected){text('notice','Snapshot refresh failed. Showing the last loaded snapshot; data may be out of date.');return;}
-    text('notice','No forecast snapshot available. Export a snapshot to view real results, or open the clearly labeled demo.');const a=node('a','View demo');a.href='?demo=1';$('notice').append(document.createTextNode(' '),a);
+function validateSnapshot(candidate) {
+  if (!candidate || !Number.isFinite(Date.parse(candidate.generated_at_utc)) ||
+      !Array.isArray(candidate.runs) || !candidate.runs.length || !Array.isArray(candidate.pipelines)) {
+    throw new Error('Invalid snapshot');
+  }
+  const ids = new Set();
+  for (const run of candidate.runs) {
+    if (!run.id || ids.has(run.id) || !Number.isFinite(Date.parse(run.issue_time_utc)) ||
+        !Number.isFinite(Date.parse(run.origin_utc)) || !run.metrics || !Array.isArray(run.rows) || !run.rows.length ||
+        run.scored_hours + run.pending_hours !== run.rows.length) throw new Error('Invalid forecast issue');
+    ids.add(run.id);
+    for (const row of run.rows) {
+      if (!Number.isFinite(Date.parse(row.timestamp_utc)) || !Number.isFinite(row.forecast_mw) || row.forecast_mw <= 0 ||
+          (row.actual_mw !== null && (!Number.isFinite(row.actual_mw) || row.actual_mw <= 0))) {
+        throw new Error('Invalid hourly demand');
+      }
+    }
+  }
+  for (const pipeline of candidate.pipelines) {
+    if (typeof pipeline.name !== 'string' || !Array.isArray(pipeline.executions) ||
+        pipeline.executions.some(e => !Number.isFinite(Date.parse(e.started_at_utc)))) throw new Error('Invalid pipeline status');
   }
 }
-$('issue').addEventListener('change',render);$('zone').addEventListener('change',()=>{const id=selected?.id;load().then(()=>{if(id){$('issue').value=id;render();}});});$('reload').addEventListener('click',load);
+
+function renderOverview() {
+  const previousId = selected?.id;
+  $('issue').replaceChildren(...data.runs.map(run => {
+    const option = node('option', when(run.issue_time_utc) + ' · ' + run.status);
+    option.value = run.id;
+    return option;
+  }));
+  if (data.runs.some(run => run.id === previousId)) $('issue').value = previousId;
+  const age = (Date.now() - Date.parse(data.generated_at_utc)) / 3600000;
+  const expired = Date.parse(data.runs[0].origin_utc) + data.runs[0].rows.length * 3600000 < Date.now();
+  text('notice', data.demo
+    ? 'DEMO DATA · Illustrative values only. This is not GridCast production performance.'
+    : `Stored AWS snapshot · ${age > 24 ? 'Snapshot is more than 24 hours old. ' : ''}${expired ? 'The latest available forecast horizon has ended. ' : ''}Accuracy includes observed hours only; missing actuals stay pending.`);
+  text('updated', 'Snapshot: ' + when(data.generated_at_utc) + ' ' + $('zone').value);
+  $('pipelines').replaceChildren(...data.pipelines.map(pipeline => {
+    const item = node('div', null, 'pipeline');
+    const latest = pipeline.executions[0];
+    item.append(node('strong', pipeline.name.endsWith('ingestion') ? 'Demand & weather imports' : 'Daily forecast'));
+    item.append(node('span', latest?.status || 'UNKNOWN', 'badge' + (latest?.status === 'SUCCEEDED' ? '' : ' bad')));
+    item.append(node('small', latest ? when(latest.started_at_utc) + ' ' + $('zone').value : 'No executions recorded'));
+    item.append(node('small', pipeline.executions.map(e => e.status === 'SUCCEEDED' ? '✓' : e.status === 'FAILED' ? '×' : '·').join('  ') + '  Recent executions, newest first'));
+    return item;
+  }));
+  render();
+}
+
+async function load() {
+  if (loading) return;
+  loading = true;
+  $('reload').disabled = true;
+  $('reload').setAttribute('aria-busy', 'true');
+  try {
+    const demo = new URLSearchParams(location.search).get('demo') === '1';
+    const response = await fetch(demo ? 'demo.json' : 'snapshot.json', {cache:'no-store', signal:AbortSignal.timeout(10000)});
+    if (!response.ok) throw new Error('No snapshot');
+    const candidate = await response.json();
+    validateSnapshot(candidate);
+    candidate.runs.sort((a,b) => Date.parse(b.issue_time_utc) - Date.parse(a.issue_time_utc));
+    data = candidate;
+    renderOverview();
+  } catch (error) {
+    if (selected) {
+      text('notice', 'Snapshot refresh failed. Showing the last loaded snapshot; data may be out of date.');
+    } else {
+      text('notice', 'No valid forecast snapshot available. Export a snapshot to view real results, or open the clearly labeled demo.');
+      const link = node('a', 'View demo');
+      link.href = '?demo=1';
+      $('notice').append(document.createTextNode(' '), link);
+    }
+  } finally {
+    loading = false;
+    $('reload').disabled = false;
+    $('reload').removeAttribute('aria-busy');
+  }
+}
+
+$('issue').addEventListener('change', render);
+$('zone').addEventListener('change', () => { if (data) renderOverview(); });
+$('reload').addEventListener('click', load);
+window.addEventListener('resize', () => { if (selected) chart(selected.rows); });
 $('download').addEventListener('click',()=>{
   if(!selected)return;
   const fields=['timestamp_utc','horizon_hours','forecast_mw','actual_mw'];
   const csv=[fields.join(','),...selected.rows.map(r=>fields.map(f=>r[f]??'').join(','))].join('\r\n');
-  const url=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));const a=node('a');a.href=url;a.download='gridcast-'+selected.id+'.csv';a.click();URL.revokeObjectURL(url);
+  const url=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));const a=node('a');a.href=url;a.download='gridcast-'+selected.id+'.csv';document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
 });load();

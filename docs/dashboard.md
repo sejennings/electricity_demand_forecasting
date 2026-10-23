@@ -9,22 +9,30 @@ From the repository root in PowerShell:
 ```powershell
 # Requires the existing AWS optional dependencies and a valid default CLI session.
 .venv/Scripts/python.exe -m scripts.export_dashboard
-.venv/Scripts/python.exe -m http.server 8870 --bind 127.0.0.1 --directory dashboard
+.venv/Scripts/python.exe -m scripts.serve_dashboard
 ```
 
-Open [the local dashboard](http://127.0.0.1:8870/). The export reads at most 30
+Open [the local dashboard](http://127.0.0.1:8870/). The export displays at most 30
 issues by default (`--limit 1` through `100`), sorts by actual issue time and
 atomically replaces the ignored `dashboard/snapshot.json`. It lists and reads all
 forecast manifests to discover issues by actual issue time, then reads the latest
-score revisions for the selected issues. Consequently exports still incur small S3 request
+score revisions for the selected issues. Discovery stops before downloading
+manifests if the archive exceeds 500 issues; review its size before increasing
+`--max-manifests`. Consequently exports still incur small S3 request
 charges; repeatedly exporting a large archive increases request usage. It reads
 five recent executions per pipeline. No cloud state or forecasts are modified.
 
 The browser reads only that snapshot. **Refresh view reloads the local snapshot;
 it does not export new AWS data.** Run the export command again for current data.
-Snapshot time and stale snapshots are shown. Serving only `dashboard/` prevents
-the web server from exposing repository configuration, state or credentials.
-Keep the server bound to loopback.
+Snapshot time and stale snapshots are shown. Refresh preserves the selected issue,
+and timezone changes re-render the loaded data without fetching it again. A failed
+or malformed refresh retains the last valid view with an explicit warning.
+Exports reject invalid or mismatched forecast/actual records; interrupted writes
+leave the previous snapshot intact.
+
+The launcher serves only known dashboard assets, binds to loopback and disables
+HTTP caching. It works from any current directory and accepts `--port 8871` if
+the default port is occupied. Stop it with Ctrl+C. It does not refresh AWS data.
 
 Features: issue selection, UTC/Eastern display, forecast/actual chart, pending
 actual gaps, per-issue WAPE and MAE, scoring coverage, hourly values, CSV download,

@@ -3,6 +3,20 @@ from scripts.check_cost_controls import check_plan, check_attempts, check_image_
 
 
 class CostControlTests(unittest.TestCase):
+    def test_known_workflow_also_requires_audited_source(self):
+        import json
+        from scripts.check_cost_controls import POLICY
+        policy=json.loads(POLICY.read_text())
+        address='aws_sfn_state_machine.forecast'
+        rule=policy['resources'][address]
+        definition={'TimeoutSeconds':rule['workflow_limits']['timeout'],'States':rule['workflow_limits']['states']}
+        policy['resources']={address:rule}
+        plan={'planned_values':{'root_module':{'resources':[{
+            'address':address,'mode':'managed','type':rule['type'],'values':{'definition':json.dumps(definition)}}]}}}
+        check_plan(plan,policy)
+        rule['definition_source']['sha256']='changed without review'
+        with self.assertRaisesRegex(ValueError,'audited source'):check_plan(plan,policy)
+
     def test_unknown_workflow_requires_exact_audited_source_and_existing_limits(self):
         import json
         from pathlib import Path

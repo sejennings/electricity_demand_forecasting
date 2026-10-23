@@ -2,10 +2,79 @@ import csv
 import hashlib
 import io
 import unittest
-from scripts.export_dashboard import build_run
+from scripts.export_dashboard import build_run, export, write_snapshot
 
 
 class DashboardTests(unittest.TestCase):
+    def test_local_server_exposes_only_known_assets(self):
+        import tempfile
+        import threading
+        from functools import partial
+        from http.server import ThreadingHTTPServer
+        from pathlib import Path
+        from urllib.error import HTTPError
+        from urllib.request import urlopen
+        from scripts.serve_dashboard import DashboardHandler
+        class QuietHandler(DashboardHandler):
+            def log_message(self, *args):
+                pass
+        with tempfile.TemporaryDirectory() as folder:
+            root=Path(folder)
+            (root/'index.html').write_text('dashboard')
+            (root/'private.tmp').write_text('not a dashboard asset')
+            with ThreadingHTTPServer(('127.0.0.1',0),partial(QuietHandler,directory=folder)) as server:
+                thread=threading.Thread(target=server.serve_forever,daemon=True)
+                thread.start()
+                try:
+                    url=f'http://127.0.0.1:{server.server_port}'
+                    with urlopen(url+'/?demo=1',timeout=5) as response:
+                        self.assertEqual(response.read(),b'dashboard')
+                        self.assertEqual(response.headers['Cache-Control'],'no-store')
+                    for path in ['/private.tmp','/../AGENTS.md']:
+                        with self.assertRaises(HTTPError) as error:
+                            urlopen(url+path,timeout=5)
+                        self.assertEqual(error.exception.code,404)
+                finally:
+                    server.shutdown()
+                    thread.join(timeout=5)
+
+    def test_invalid_scores_and_empty_forecasts_are_rejected(self):
+        manifest=self.fixture()
+        base=dict(forecast_sha256=manifest['forecast_sha256'],issue_time_utc=manifest['issue_time_utc'])
+        for rows in [
+            [dict(timestamp_utc='2026-10-21T01:00:00Z',actual_mw=float('nan'))],
+            [dict(timestamp_utc='2026-10-22T01:00:00Z',actual_mw=80)],
+            [dict(timestamp_utc='2026-10-21T01:00:00Z',actual_mw=80)]*2,
+        ]:
+            with self.assertRaises(ValueError): build_run(manifest,dict(base,rows=rows))
+        with self.assertRaisesRegex(ValueError,'before its hour ended'):
+            build_run(manifest,dict(base,rows=[dict(timestamp_utc='2026-10-21T01:00:00Z',actual_mw=80)],
+                                    scored_at_utc='2026-10-21T01:30:00Z'))
+        manifest['forecast_csv']='timestamp_utc,horizon_hours,forecast_mw\n'
+        manifest['forecast_sha256']=hashlib.sha256(manifest['forecast_csv'].encode()).hexdigest()
+        with self.assertRaisesRegex(ValueError,'Empty forecast'): build_run(manifest)
+
+    def test_failed_snapshot_write_preserves_last_good_data(self):
+        import tempfile
+        from pathlib import Path
+        with tempfile.TemporaryDirectory() as folder:
+            path=Path(folder)/'snapshot.json'
+            path.write_text('last good snapshot')
+            with self.assertRaises(ValueError): write_snapshot(path,{'bad':float('nan')})
+            self.assertEqual(path.read_text(),'last good snapshot')
+            self.assertEqual(list(Path(folder).glob('*.tmp')),[])
+            write_snapshot(path,{'runs':[]})
+            self.assertIn('runs',path.read_text())
+
+    def test_manifest_allowance_fails_before_downloads(self):
+        from unittest.mock import Mock
+        session=Mock();s3=session.client.return_value
+        s3.get_paginator.return_value.paginate.return_value=[{'Contents':[
+            {'Key':'forecasts/runs/a/manifest.json'}, {'Key':'forecasts/runs/b/manifest.json'}]}]
+        with self.assertRaisesRegex(ValueError,'Manifest allowance'):
+            export(session,limit=1,max_manifests=1)
+        s3.get_object.assert_not_called()
+
     def fixture(self):
         rows=[dict(timestamp_utc=f'2026-10-21T{h:02}:00:00Z',horizon_hours=h,forecast_mw=100)
               for h in [1,2]]

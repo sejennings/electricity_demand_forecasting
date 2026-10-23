@@ -29,6 +29,8 @@ jobs:
           python -m pip install --no-deps -e .
       - name: Run regression tests
         run: python -m unittest discover -s tests -v
+      - name: Validate dashboard JavaScript
+        run: node --check dashboard/app.js
       - name: Build deterministic Lambda layer
         run: python scripts/build_arrow_layer.py
       - name: Validate Terraform without AWS access
