@@ -357,6 +357,77 @@
     "aws_vpc.forecast": {
       "type": "aws_vpc",
       "limits": {}
+    },
+    "aws_cloudwatch_log_group.dashboard": {
+      "type": "aws_cloudwatch_log_group",
+      "limits": {
+        "retention_in_days": 7
+      }
+    },
+    "aws_cloudwatch_metric_alarm.dashboard": {
+      "type": "aws_cloudwatch_metric_alarm",
+      "limits": {}
+    },
+    "aws_iam_role.dashboard": {
+      "type": "aws_iam_role",
+      "limits": {}
+    },
+    "aws_iam_role.dashboard_schedule": {
+      "type": "aws_iam_role",
+      "limits": {}
+    },
+    "aws_iam_role_policy.dashboard": {
+      "type": "aws_iam_role_policy",
+      "limits": {}
+    },
+    "aws_iam_role_policy.dashboard_schedule": {
+      "type": "aws_iam_role_policy",
+      "limits": {}
+    },
+    "aws_lambda_function.dashboard": {
+      "type": "aws_lambda_function",
+      "limits": {
+        "memory_size": 256,
+        "timeout": 120,
+        "reserved_concurrent_executions": -1
+      }
+    },
+    "aws_lambda_function_event_invoke_config.dashboard": {
+      "type": "aws_lambda_function_event_invoke_config",
+      "limits": {
+        "maximum_retry_attempts": 0,
+        "maximum_event_age_in_seconds": 1800
+      }
+    },
+    "aws_s3_bucket.dashboard": {
+      "type": "aws_s3_bucket",
+      "limits": {}
+    },
+    "aws_s3_bucket_cors_configuration.dashboard": {
+      "type": "aws_s3_bucket_cors_configuration",
+      "limits": {}
+    },
+    "aws_s3_bucket_ownership_controls.dashboard": {
+      "type": "aws_s3_bucket_ownership_controls",
+      "limits": {}
+    },
+    "aws_s3_bucket_policy.dashboard": {
+      "type": "aws_s3_bucket_policy",
+      "limits": {}
+    },
+    "aws_s3_bucket_public_access_block.dashboard": {
+      "type": "aws_s3_bucket_public_access_block",
+      "limits": {}
+    },
+    "aws_s3_bucket_server_side_encryption_configuration.dashboard": {
+      "type": "aws_s3_bucket_server_side_encryption_configuration",
+      "limits": {}
+    },
+    "aws_scheduler_schedule.dashboard": {
+      "type": "aws_scheduler_schedule",
+      "limits": {
+        "schedule_expression": "cron(15 14,15 * * ? *)"
+      }
     }
   }
 }

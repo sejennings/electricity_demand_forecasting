@@ -12,7 +12,8 @@ def estimate():
     hourly = D('.5') * D('.04048') + D('2') * D('.004445') + D('.005')
     costs = {
         'forecast_compute_and_ipv4': hourly * D(41) * D(2) / D(60),
-        'five_standard_alarms': D('.50'),
+        'six_standard_alarms': D('.60'),
+        'public_dashboard_publish_and_traffic_allowance': D('1'),
         'one_secret': D('.40'),
         'ecr_5_GiB': D('.50'),
         's3_5_GiB': D('.115'),

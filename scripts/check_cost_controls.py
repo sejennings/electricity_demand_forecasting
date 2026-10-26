@@ -22,7 +22,7 @@ def check_plan(plan, policy=None):
         rule = expected[address]
         if resource['type'] != rule['type']:
             raise ValueError(f'Unreviewed resource type: {address}')
-        values = resource['values']
+        values = resource.get('values', {})
         for field, limit in rule['limits'].items():
             actual = (values['configuration'][0].get(field)
                       if field == 'bytes_scanned_cutoff_per_query' else values.get(field))

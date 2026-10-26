@@ -6,6 +6,9 @@ actual demand arrives.
 
 ## Open the dashboard
 
+[Public dashboard](https://sejennings.github.io/gridcast/) — AWS data refreshes
+twice daily. No AWS sign-in is needed to view it.
+
 From the project folder in PowerShell:
 
 ```powershell
