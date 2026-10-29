@@ -69,6 +69,11 @@ past runs, not a guarantee of current accuracy or pipeline health.
 node --check dashboard/app.js
 ```
 
+CI and production deployment share the same [validation action](.github/actions/validate/action.yml),
+which also builds the Lambda layer, validates both Terraform roots, and checks the
+Linux model container. See the [deployment guide](docs/github-actions-deployment.md)
+for release gates and the recorded AWS OIDC blocker.
+
 The usage target is **$10/month before credits**. The local dashboard adds no
 hosting bill; AWS updates make read-only API requests. Budget alerts and usage
 checks reduce risk but do not guarantee a maximum bill. See the

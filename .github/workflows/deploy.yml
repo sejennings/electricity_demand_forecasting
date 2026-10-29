@@ -12,6 +12,7 @@ on:
       - 'requirements-*-lock.txt'
       - 'pyproject.toml'
       - '.github/workflows/**'
+      - '.github/actions/**'
 permissions:
   contents: read
 concurrency:
@@ -45,22 +46,8 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: python -m scripts.check_deployment_allowance
-      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
-        with:
-          python-version: '3.12'
-      - uses: hashicorp/setup-terraform@b9cd54a3c349d3f38e8881555d616ced269862dd # v3
-        with:
-          terraform_version: 1.16.6
-          terraform_wrapper: false
       - name: Validate release before requesting AWS credentials
-        run: |
-          python -m pip install -r requirements-model-lock.txt -r requirements-runtime-lock.txt
-          python -m pip install --no-deps -e .
-          python -m unittest discover -s tests -v
-          python scripts/build_arrow_layer.py
-          terraform fmt -check -recursive infrastructure
-          terraform -chdir=infrastructure/terraform init -backend=false -input=false -lockfile=readonly
-          terraform -chdir=infrastructure/terraform validate
+        uses: ./.github/actions/validate
       - uses: aws-actions/configure-aws-credentials@cabfdba3510de1431bac9dba27511d97497fc100 # v5
         with:
           role-to-assume: ${{ vars.AWS_DEPLOY_ROLE_ARN }}
@@ -80,7 +67,7 @@ jobs:
           python -c "import json; from scripts.check_cost_controls import POLICY, check_image_capacity; check_image_capacity(json.load(open('$RUNNER_TEMP/ecr-images.json'))['imageDetails'], json.loads(POLICY.read_text()))"
           aws ecr get-login-password | docker login --username AWS --password-stdin "$registry"
           trap 'docker logout "$registry" >/dev/null 2>&1 || true' EXIT
-          docker build --platform linux/amd64 -t "$image" .
+          docker tag gridcast-check "$image"
           test "$(docker image inspect "$image" --format '{{.Size}}')" -le 1073741824
           docker push "$image"
           digest=$(aws ecr describe-images --repository-name gridcast-model --image-ids "imageTag=$tag" --query 'imageDetails[0].imageDigest' --output text)

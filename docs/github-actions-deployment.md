@@ -3,12 +3,17 @@
 `Checks` runs on pull requests and pushes to `main`: regression tests,
 deterministic PyArrow packaging, Terraform format/validation, and a Linux Docker
 build with a non-root, read-only scratch-storage check. It receives no AWS
-credentials. Actions use verified full commit SHAs.
+credentials. Both workflows use the shared
+[validation action](../.github/actions/validate/action.yml), so deployment runs the
+same regression, JavaScript, layer, bootstrap/production Terraform and container
+checks before requesting AWS credentials. Actions are pinned to full commit SHAs.
 
 `Deploy production` runs on relevant pushes to `main` or manual dispatch. It is
-currently **disabled** with `AWS_DEPLOY_ENABLED=false`: AWS's managed service
-control policy rejects GitHub OIDC provider creation. Existing daily forecasts
-remain enabled independently of CI.
+**disabled in the October 18 deployment record** with
+`AWS_DEPLOY_ENABLED=false`: AWS's managed service control policy rejected GitHub
+OIDC provider creation. This is recorded deployment evidence, not a live status
+check. Existing daily forecasts run independently of CI. Check the repository
+variable and the latest workflow run before changing deployment settings.
 
 ## Shared state
 
@@ -76,10 +81,12 @@ and owner review of deployment permissions.
 
 ## Release flow
 
-1. Test, build the deterministic Lambda layer and validate Terraform before AWS
-   authentication.
-2. Assume the one-hour OIDC deployment role. Build/push an immutable tag containing
-   commit/run/attempt IDs and resolve its digest.
+1. Check the monthly deployment allowance, then run the shared validation action,
+   including the container smoke check and both Terraform roots, before AWS authentication.
+   A failed check blocks credential acquisition and all subsequent release steps.
+2. Assume the one-hour OIDC deployment role. Tag the container that passed the
+   shared smoke check with immutable commit/run/attempt IDs, push that same image
+   without rebuilding it, and resolve its digest.
 3. Explicitly start a basic scan of the Linux amd64 image; the registry may have
    no scan-on-push rules even when the repository has its legacy scan flag set.
    Reuse the existing result if AWS's once-per-24-hours scan limit is reached.
@@ -96,6 +103,12 @@ and owner review of deployment permissions.
 6. Run a real forecast, checking exit status, image/model/content hashes, snapshot
    availability, 24 consecutive future hours, issue time and the matching score.
    Future actuals are expected to remain pending.
+
+Relevant pushes include source, infrastructure, scripts, dependency locks, the
+Docker build inputs, workflows and shared actions. Documentation-only changes do
+not trigger deployment; they still run `Checks` on pushes to `main`. Manual
+dispatch follows the same validation and cost gates. The production job also
+requires `main` and `AWS_DEPLOY_ENABLED=true`.
 
 Deployments are serialized and are not cancelled by a newer push. The state-lock
 timeout is five minutes. A failed smoke test fails the job and does not trigger an
