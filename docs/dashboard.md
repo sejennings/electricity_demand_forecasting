@@ -1,5 +1,15 @@
 # Using the dashboard
 
+The [public dashboard](https://sejennings.github.io/gridcast/) loads AWS data
+published at 14:15 and 15:15 UTC each day, after the daily imports and forecast.
+Use **Refresh data** to fetch the latest published summary. This does not start
+a job. Failed updates keep the previous summary; its timestamp remains visible.
+
+Only the dashboard summary is public. Raw data, AWS credentials, image addresses,
+and execution names are excluded. The data lake remains private.
+
+## Local use
+
 Start it from the project folder:
 
 ```powershell
@@ -48,3 +58,18 @@ session, never in browser code. No cloud resources are created.
 Exports keep the newest 30 issues by default. Use `--limit` for 1–100 issues.
 Discovery stops above 500 manifests; review archive size before raising
 `--max-manifests`. Requests have small AWS usage costs. Snapshots are ignored by Git.
+
+## Publishing page changes
+
+The portfolio repository serves the page at `/gridcast/`. Build its assets with:
+
+```powershell
+.venv/Scripts/python.exe -m scripts.build_public_dashboard --output PATH_TO_PORTFOLIO/gridcast
+```
+
+Commit those assets in the portfolio repository to publish page changes. Data
+updates run independently through Terraform's `gridcast-publish-dashboard`
+Lambda and `publish-dashboard` schedule. Publication failures use the existing
+email alert topic. The publisher is limited to two scheduled runs per day,
+256 MiB, 120 seconds, 30 issues, and a 1 MiB output. No public compute endpoint
+or always-running server is involved.

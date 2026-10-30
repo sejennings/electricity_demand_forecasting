@@ -1,4 +1,6 @@
 const $ = id => document.getElementById(id);
+const publicFeed = document.documentElement.dataset.snapshotUrl;
+const localUpdates = !publicFeed && ['127.0.0.1', 'localhost'].includes(location.hostname);
 let data, selected, loading = false;
 const fmt = (v, digits=0) => v == null ? '—' : Number(v).toLocaleString('en-US',{maximumFractionDigits:digits});
 const when = (value, compact=false) => new Intl.DateTimeFormat('en-US',{timeZone:$('zone').value,month:'short',day:'numeric',hour:'2-digit',minute:compact?undefined:'2-digit',hour12:false}).format(new Date(value));
@@ -74,7 +76,7 @@ function renderOverview() {
   const expired = Date.parse(data.runs[0].origin_utc) + data.runs[0].rows.length * 3600000 < Date.now();
   text('notice', data.demo
     ? 'DEMO DATA · Illustrative values only. This is not GridCast production performance.'
-    : `Stored AWS snapshot · ${age > 24 ? 'Snapshot is more than 24 hours old. ' : ''}${expired ? 'The latest available forecast horizon has ended. ' : ''}Accuracy includes observed hours only; missing actuals stay pending.`);
+    : `${publicFeed ? 'AWS data · Updated twice daily. ' : 'Stored AWS snapshot · '}${age > 24 ? 'Snapshot is more than 24 hours old. ' : ''}${expired ? 'The latest available forecast horizon has ended. ' : ''}Accuracy includes observed hours only; missing actuals stay pending.`);
   text('updated', 'Snapshot: ' + when(data.generated_at_utc) + ' ' + $('zone').value);
   $('pipelines').replaceChildren(...data.pipelines.map(pipeline => {
     const item = node('div', null, 'pipeline');
@@ -95,8 +97,9 @@ async function load() {
   $('reload').setAttribute('aria-busy', 'true');
   try {
     const demo = new URLSearchParams(location.search).get('demo') === '1';
-    $('sync').hidden = demo;
-    const response = await fetch(demo ? 'demo.json' : 'snapshot.json', {cache:'no-store', signal:AbortSignal.timeout(10000)});
+    $('sync').hidden = demo || !localUpdates;
+    if (publicFeed) $('reload').textContent = 'Refresh data';
+    const response = await fetch(demo ? 'demo.json' : (publicFeed || 'snapshot.json'), {cache:'no-store', signal:AbortSignal.timeout(10000)});
     if (!response.ok) throw new Error('No snapshot');
     const candidate = await response.json();
     validateSnapshot(candidate);
@@ -107,7 +110,7 @@ async function load() {
     if (selected) {
       text('notice', 'Snapshot refresh failed. Showing the last loaded snapshot; data may be out of date.');
     } else {
-      text('notice', 'No valid forecast snapshot available. Export a snapshot to view real results, or open the clearly labeled demo.');
+      text('notice', publicFeed ? 'Forecast data is temporarily unavailable. Try Refresh data again shortly, or explore the clearly labeled demo.' : 'No valid forecast snapshot available. Export a snapshot to view real results, or open the clearly labeled demo.');
       const link = node('a', 'View demo');
       link.href = '?demo=1';
       $('notice').append(document.createTextNode(' '), link);

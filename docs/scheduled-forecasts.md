@@ -17,7 +17,8 @@ are dropped. A dedicated public subnet provides HTTPS egress for AWS/EIA/weather
 with no inbound security-group rules, NAT gateway, load balancer or persistent
 running service. Its public IPv4 exists only while the task runs. ECR, storage,
 Fargate, IPv4 and logging incur usage charges; the existing $5 budget is an alert,
-not a spending cap. The project remains on its Free plan.
+not a spending cap. The October 18 deployment record reports a Free plan; check
+current plan and spend status in AWS Settings before a new deployment.
 
 ## Reproducible artifacts
 
@@ -31,9 +32,11 @@ If both EIA API requests time out, collection can use the official published
 workbook alone. The manifest labels that source explicitly, reports the latest
 observed hour and missing hours, and does not fabricate API updates.
 
-Each task downloads and verifies the model before loading it, collects fresh
-inputs and records actual issuance after input retrieval. The scheduled trigger
-time is never substituted for the issue time. The next whole UTC hour begins its
+Each task collects and archives fresh inputs, then downloads and verifies the
+model before loading it for a new forecast. It records actual issuance after
+input retrieval. A retry with an already committed forecast skips model loading
+and forecast generation, then continues scoring with fresh actuals. The scheduled
+trigger time is never substituted for the issue time. The next whole UTC hour begins its
 24-hour horizon. A run that misses that origin before publication fails.
 
 Each workflow execution name is the forecast ID. The atomic S3 record at
@@ -80,11 +83,12 @@ Tagged ECR release images are retained; untagged images expire after seven days.
 Rebuilds should apply OS security updates, use a new immutable tag, scan the
 platform image and pin the tested digest in Terraform.
 
-## Open image scan findings
+## Recorded image scan findings (October 18, 2026)
 
 The October 18 release applied all available Bookworm OS updates (none were
-available at build time). ECR basic scanning still reports **7 high, 4 medium and
-2 low** OS findings. These remain open; capability restrictions and non-root
+available at build time). ECR basic scanning reported **7 high, 4 medium and
+2 low** OS findings. These findings were open in that release; consult a fresh scan
+of the pinned image digest for current status. Capability restrictions and non-root
 execution are mitigations, not fixes. The high findings name util-linux and zlib.
 Debian's trackers for [util-linux](https://security-tracker.debian.org/tracker/CVE-2026-76642)
 and [zlib](https://security-tracker.debian.org/tracker/CVE-2026-85091) document
