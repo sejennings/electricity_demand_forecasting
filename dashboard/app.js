@@ -3,39 +3,51 @@ const publicFeed = document.documentElement.dataset.snapshotUrl;
 const localUpdates = !publicFeed && ['127.0.0.1', 'localhost'].includes(location.hostname);
 let data, selected, loading = false;
 const fmt = (v, digits=0) => v == null ? '—' : Number(v).toLocaleString('en-US',{maximumFractionDigits:digits});
-const when = (value, compact=false) => new Intl.DateTimeFormat('en-US',{timeZone:$('zone').value,month:'short',day:'numeric',hour:'2-digit',minute:compact?undefined:'2-digit',hour12:false}).format(new Date(value));
+const when = (value, compact=false) => new Intl.DateTimeFormat('en-US',{
+  timeZone:$('zone').value, month:compact?undefined:'short', day:compact?undefined:'numeric',
+  hour:'numeric', minute:compact?undefined:'2-digit', hour12:$('zone').value!=='UTC',
+  timeZoneName:compact?undefined:'short'
+}).format(new Date(value));
+const scoreLabel = status => ({complete:'All hours checked', partial:'Some hours checked', pending:'Waiting for measurements'}[status] || 'Results unavailable');
+const jobLabel = status => ({SUCCEEDED:'Completed',FAILED:'Needs attention',TIMED_OUT:'Timed out',RUNNING:'Running',ABORTED:'Stopped',PENDING_REDRIVE:'Awaiting retry'}[status] || 'Unknown');
 function text(id,value){$(id).textContent=value;}
 function node(tag,content,cls){const n=document.createElement(tag);if(content!=null)n.textContent=content;if(cls)n.className=cls;return n;}
+function notice(message, tone='info') { text('notice',message); $('notice').dataset.tone=tone; }
 function render(){
   selected=data.runs.find(r=>r.id===$('issue').value);
   if(!selected)return;
   const r=selected, peak=r.rows.reduce((a,b)=>b.forecast_mw>a.forecast_mw?b:a);
-  text('peak',fmt(peak.forecast_mw)+' MW');text('peakTime',when(peak.timestamp_utc)+' · '+$('zone').value);
+  text('peak',fmt(peak.forecast_mw)+' MW');text('peakTime',when(peak.timestamp_utc));
   text('wape',r.metrics.wape_percent==null?'—':fmt(r.metrics.wape_percent,2)+'%');
-  text('mae',fmt(r.metrics.mae_mw,1));text('coverage',r.scored_hours+' / '+r.rows.length);
-  text('scoreStatus',r.status==='complete'?'All actuals available':r.pending_hours+' '+(r.pending_hours===1?'hour':'hours')+' awaiting actuals');
-  text('issueMeta','Issued '+when(r.issue_time_utc)+' · '+$('zone').value+' · '+r.status+' scoring');
+  text('mae',r.metrics.mae_mw==null?'—':fmt(r.metrics.mae_mw,1)+' MW');text('coverage',r.scored_hours+' of '+r.rows.length);
+  text('scoreStatus',r.status==='complete'?'All measurements received':r.pending_hours+' '+(r.pending_hours===1?'hour':'hours')+' still waiting for measurements');
+  const ended=Date.parse(r.rows.at(-1).timestamp_utc)+3600000<Date.now();
+  text('forecastSummary',`${ended?'This past forecast expected':'This forecast expects'} demand to peak at ${fmt(peak.forecast_mw)} MW. `+
+    (r.scored_hours ? `${r.scored_hours} of ${r.rows.length} hours have been checked against measured demand.` : 'Measurements are not available yet, so the error numbers are still blank.'));
+  text('issueMeta','Made '+when(r.issue_time_utc)+' · '+scoreLabel(r.status));
   $('hours').replaceChildren(...r.rows.map(row=>{
-    const tr=node('tr');[when(row.timestamp_utc),fmt(row.forecast_mw,1),row.actual_mw==null?'Pending':fmt(row.actual_mw,1),row.actual_mw==null?'—':fmt(row.forecast_mw-row.actual_mw,1)].forEach((v,i)=>tr.append(node('td',v,row.actual_mw==null&&i>1?'pending':'')));return tr;
+    const tr=node('tr');[when(row.timestamp_utc),fmt(row.forecast_mw,1),row.actual_mw==null?'Waiting':fmt(row.actual_mw,1),row.actual_mw==null?'—':fmt(row.forecast_mw-row.actual_mw,1)].forEach((v,i)=>tr.append(node('td',v,row.actual_mw==null&&i>1?'pending':'')));return tr;
   }));
   $('provenance').replaceChildren();
-  for(const [label,value] of [['Issue ID',r.id],['Model SHA-256',r.model_sha256],['Image',r.image_uri||'Not recorded'],['Scored at',r.scored_at_utc?when(r.scored_at_utc):'Awaiting actuals']]){
+  for(const [label,value] of [['Forecast ID',r.id],['Model SHA-256',r.model_sha256],...(publicFeed?[]:[['Image',r.image_uri||'Not recorded']]),['Last checked',r.scored_at_utc?when(r.scored_at_utc):'Waiting for measurements']]){
     const p=node('p');p.append(node('strong',label+': '),document.createTextNode(value));$('provenance').append(p);
   }
   chart(r.rows);
 }
 function chart(rows){
-  const width=Math.max(540,$('chart').clientWidth), right=width-25;
-  const ns='http://www.w3.org/2000/svg', svg=document.createElementNS(ns,'svg');svg.setAttribute('viewBox',`0 0 ${width} 290`);svg.style.minWidth='540px';svg.setAttribute('role','img');
+  const width=Math.max(320,$('chart').clientWidth), right=width-16;
+  const ns='http://www.w3.org/2000/svg', svg=document.createElementNS(ns,'svg');svg.setAttribute('viewBox',`0 0 ${width} 290`);svg.style.minWidth='320px';svg.setAttribute('role','img');
   const title=document.createElementNS(ns,'title');title.textContent='Hourly forecast and available actual demand. Exact values appear in the table below.';svg.append(title);
   const values=rows.flatMap(r=>[r.forecast_mw,r.actual_mw]).filter(v=>v!=null), lo=Math.floor(Math.min(...values)*.9/100)*100, hi=Math.ceil(Math.max(...values)*1.06/100)*100;
   const x=i=>65+i*(right-65)/Math.max(1,rows.length-1), y=v=>235-(v-lo)/(hi-lo||1)*210;
   function el(tag,attrs,content){const n=document.createElementNS(ns,tag);for(const [k,v]of Object.entries(attrs))n.setAttribute(k,v);if(content!=null)n.textContent=content;svg.append(n);return n;}
-  for(let i=0;i<5;i++){const value=lo+(hi-lo)*i/4;el('line',{x1:65,x2:right,y1:y(value),y2:y(value),stroke:'#2a3d57','stroke-dasharray':'3 5'});el('text',{x:52,y:y(value)+4,'text-anchor':'end'},fmt(value));}
-  rows.forEach((r,i)=>{if(i%4===0||i===rows.length-1)el('text',{x:x(i),y:265,'text-anchor':'middle'},when(r.timestamp_utc,true));});
-  for(const [key,color] of [['forecast_mw','#ffce32'],['actual_mw','#61b9ff']]){
+  el('text',{x:65,y:13},'MW');
+  for(let i=0;i<5;i++){const value=lo+(hi-lo)*i/4;el('line',{x1:65,x2:right,y1:y(value),y2:y(value),stroke:'#dce4df','stroke-dasharray':'3 5'});el('text',{x:52,y:y(value)+4,'text-anchor':'end'},fmt(value));}
+  const step=width<600?6:4;
+  rows.forEach((r,i)=>{if(i%step===0)el('text',{x:x(i),y:265,'text-anchor':'middle'},when(r.timestamp_utc,true));});
+  for(const [key,color] of [['forecast_mw','#28786d'],['actual_mw','#486fa0']]){
     let path='',gap=true;rows.forEach((r,i)=>{if(r[key]==null){gap=true;return;}path+=(gap?'M':'L')+x(i)+','+y(r[key])+' ';gap=false;});
-    el('path',{d:path,fill:'none',stroke:color,'stroke-width':key==='forecast_mw'?3:2.5,'stroke-linejoin':'round'});
+    el('path',{d:path,fill:'none',stroke:color,'stroke-width':key==='forecast_mw'?3:2.5,'stroke-linejoin':'round','stroke-dasharray':key==='actual_mw'?'7 4':'none'});
     rows.forEach((r,i)=>{if(r[key]!=null){const p=el('circle',{cx:x(i),cy:y(r[key]),r:3,fill:color});const t=document.createElementNS(ns,'title');t.textContent=when(r.timestamp_utc)+' · '+(key==='forecast_mw'?'Forecast':'Actual')+' '+fmt(r[key],1)+' MW';p.append(t);}});
   }
   $('chart').replaceChildren(svg);
@@ -67,24 +79,30 @@ function validateSnapshot(candidate) {
 function renderOverview() {
   const previousId = selected?.id;
   $('issue').replaceChildren(...data.runs.map(run => {
-    const option = node('option', when(run.issue_time_utc) + ' · ' + run.status);
+    const option = node('option', when(run.issue_time_utc) + ' · ' + scoreLabel(run.status));
     option.value = run.id;
     return option;
   }));
   if (data.runs.some(run => run.id === previousId)) $('issue').value = previousId;
   const age = (Date.now() - Date.parse(data.generated_at_utc)) / 3600000;
   const expired = Date.parse(data.runs[0].origin_utc) + data.runs[0].rows.length * 3600000 < Date.now();
-  text('notice', data.demo
-    ? 'DEMO DATA · Illustrative values only. This is not GridCast production performance.'
-    : `${publicFeed ? 'AWS data · Updated twice daily. ' : 'Stored AWS snapshot · '}${age > 24 ? 'Snapshot is more than 24 hours old. ' : ''}${expired ? 'The latest available forecast horizon has ended. ' : ''}Accuracy includes observed hours only; missing actuals stay pending.`);
-  text('updated', 'Snapshot: ' + when(data.generated_at_utc) + ' ' + $('zone').value);
+  const problems=data.pipelines.some(p=>!p.executions[0] ||
+    !['SUCCEEDED','RUNNING'].includes(p.executions[0].status) || Date.now()-Date.parse(p.executions[0].started_at_utc)>36*3600000);
+  notice(data.demo
+    ? 'Demo · These are made-up examples, not results from the live model.'
+    : `${age>24?'The saved data is over a day old. ':''}${expired?'The latest forecast has ended. ':''}${problems?'A daily job needs attention. See the job status below. ':''}${publicFeed?'Data is published twice a day; Refresh data checks for a newer copy.':'This is a saved view. Update from AWS checks for newer results.'}`,
+    data.demo?'demo':age>24||expired||problems?'warning':'info');
+  text('updated', 'Data updated ' + when(data.generated_at_utc));
   $('pipelines').replaceChildren(...data.pipelines.map(pipeline => {
     const item = node('div', null, 'pipeline');
     const latest = pipeline.executions[0];
-    item.append(node('strong', pipeline.name.endsWith('ingestion') ? 'Demand & weather imports' : 'Daily forecast'));
-    item.append(node('span', latest?.status || 'UNKNOWN', 'badge' + (latest?.status === 'SUCCEEDED' ? '' : ' bad')));
-    item.append(node('small', latest ? when(latest.started_at_utc) + ' ' + $('zone').value : 'No executions recorded'));
-    item.append(node('small', pipeline.executions.map(e => e.status === 'SUCCEEDED' ? '✓' : e.status === 'FAILED' ? '×' : '·').join('  ') + '  Recent executions, newest first'));
+    const stale=latest && Date.now()-Date.parse(latest.started_at_utc)>36*3600000;
+    item.append(node('strong', pipeline.name.endsWith('ingestion') ? 'Demand & weather updates' : 'Daily forecast'));
+    item.append(node('span', stale?'No recent run':jobLabel(latest?.status), 'badge' + (latest?.status === 'SUCCEEDED'&&!stale ? '' : ' bad')));
+    item.append(node('small', latest ? 'Last run: '+when(latest.started_at_utc) : 'No runs recorded'));
+    const failures=pipeline.executions.filter(e=>['FAILED','TIMED_OUT','ABORTED'].includes(e.status)).length;
+    item.append(node('small', failures?`${failures} of the last ${pipeline.executions.length} runs did not complete.`:`No failures in the last ${pipeline.executions.length} recorded runs.`));
+    if(latest?.status==='FAILED') item.append(node('small','The job stopped. Previously saved forecasts are still available.'));
     return item;
   }));
   render();
@@ -108,9 +126,9 @@ async function load() {
     renderOverview();
   } catch (error) {
     if (selected) {
-      text('notice', 'Snapshot refresh failed. Showing the last loaded snapshot; data may be out of date.');
+      notice('We couldn’t refresh the data. The last loaded results are still shown; check their update time.','error');
     } else {
-      text('notice', publicFeed ? 'Forecast data is temporarily unavailable. Try Refresh data again shortly, or explore the clearly labeled demo.' : 'No valid forecast snapshot available. Export a snapshot to view real results, or open the clearly labeled demo.');
+      notice(publicFeed ? 'Forecast data is temporarily unavailable. Try Refresh data again shortly, or take a look at the demo.' : 'No saved forecast is available. Use Update from AWS to load results, or take a look at the demo.','error');
       const link = node('a', 'View demo');
       link.href = '?demo=1';
       $('notice').append(document.createTextNode(' '), link);
@@ -126,7 +144,7 @@ async function syncFromAWS() {
   if (loading || $('sync').disabled) return;
   $('sync').disabled = true;
   $('sync').setAttribute('aria-busy', 'true');
-  text('notice', 'Updating from AWS… This can take up to two minutes.');
+  notice('Updating from AWS… This can take up to two minutes.');
   try {
     const response = await fetch('/api/refresh', {
       method:'POST', headers:{'X-GridCast-Refresh':'1'}, signal:AbortSignal.timeout(130000)
@@ -137,7 +155,7 @@ async function syncFromAWS() {
     }
     await load();
   } catch (error) {
-    text('notice', (error.name === 'TimeoutError' ? 'AWS update timed out.' : error.message) + ' Showing the saved snapshot.');
+    notice((error.name === 'TimeoutError' ? 'AWS update timed out.' : error.message) + ' Showing the saved view.','error');
   } finally {
     $('sync').disabled = false;
     $('sync').removeAttribute('aria-busy');
