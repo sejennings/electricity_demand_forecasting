@@ -1,10 +1,62 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>GridCast · Forecast operations</title><link rel="stylesheet" href="style.css"></head>
-<body><header><a href="./" class="brand"><span class="mark">G</span> GridCast <small>DEMAND FORECASTING</small></a><span class="region">DUK <span> / </span> CAROLINAS</span></header>
-<main><div class="intro"><div><p class="eyebrow">FORECAST OPERATIONS</p><h1>Electricity demand forecasting</h1><p class="muted">Compare hourly forecasts with actual demand, review forecast accuracy, and check pipeline status.</p></div><div class="refresh-actions"><button id="sync">Update from AWS ↻</button><button id="reload">Reload saved view</button></div></div>
-<div id="notice" role="status">Loading forecast snapshot…</div>
-<section class="toolbar"><div><span class="label">FORECAST ISSUE</span><select id="issue" aria-label="Forecast issue"></select></div><div><span class="label">TIME DISPLAY</span><select id="zone" aria-label="Time zone"><option value="UTC">UTC</option><option value="America/New_York">Eastern time</option></select></div><span id="updated" class="muted"></span></section>
-<section class="cards"><article><span class="label">PEAK FORECAST</span><strong id="peak">—</strong><small id="peakTime">24-hour horizon</small></article><article><span class="label">WAPE</span><strong id="wape">—</strong><small>Scored hours of selected issue</small></article><article><span class="label">MEAN ABSOLUTE ERROR</span><strong id="mae">—</strong><small>Megawatts · scored hours only</small></article><article><span class="label">ACTUALS COVERAGE</span><strong id="coverage">—</strong><small id="scoreStatus">Awaiting observations</small></article></section>
-<section class="panel chart-panel"><div class="panel-head"><div><p class="eyebrow">24-HOUR FORECAST HORIZON</p><h2>Forecast vs. actual demand</h2></div><div class="legend"><span class="forecast-dot"></span>Forecast <span class="actual-dot"></span>Actual demand</div></div><p id="issueMeta" class="muted"></p><div id="chart" tabindex="0" aria-label="Forecast and observed demand chart"></div><p class="chart-note">Demand in MW. Gaps in actual demand remain gaps; pending hours are excluded from accuracy metrics.</p></section>
-<div class="lower"><section class="panel"><div class="panel-head"><div><p class="eyebrow">HOURLY DETAIL</p><h2>Hourly forecast data</h2></div><button id="download">Download CSV ↓</button></div><div class="table-wrap"><table><thead><tr><th>Target hour</th><th>Forecast MW</th><th>Actual MW</th><th>Error MW</th></tr></thead><tbody id="hours"></tbody></table></div></section><aside class="panel"><p class="eyebrow">PIPELINE HEALTH</p><h2>System status</h2><div id="pipelines"></div><div class="method"><span class="label">HOW TO READ THIS</span><p>Each issue preserves its original forecast. Scores update as published demand arrives. Partial scores can change as more hours become available.</p><p>These are prospective results for the selected issue, not a multi-season model evaluation.</p></div><details><summary>Forecast provenance</summary><div id="provenance"></div></details></aside></div>
-<footer>GridCast <span>Hourly demand forecasts and accuracy monitoring.</span><span>Read-only snapshot · no automatic AWS polling</span></footer></main><script src="app.js"></script></body></html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>GridCast · Electricity demand</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <a class="skip-link" href="#forecast">Skip to forecast</a>
+  <header>
+    <a href="./" class="brand"><span class="mark" aria-hidden="true">G</span> GridCast <small>Electricity demand</small></a>
+    <span class="region">Duke Energy Carolinas</span>
+  </header>
+  <main id="forecast">
+    <div class="intro">
+      <div>
+        <p class="eyebrow">Daily demand forecast</p>
+        <h1>How much electricity will we need?</h1>
+        <p class="muted">An hourly forecast for Duke Energy Carolinas, with a look back at how it compares with measured demand.</p>
+      </div>
+      <div class="refresh-actions"><button id="sync">Update from AWS</button><button id="reload">Reload saved view</button></div>
+    </div>
+    <div id="notice" role="status" aria-live="polite">Loading the latest forecast…</div>
+    <section class="toolbar" aria-label="Choose a forecast">
+      <div><label class="label" for="issue">Forecast made on</label><select id="issue" aria-label="Forecast issue"></select></div>
+      <div><label class="label" for="zone">Show times in</label><select id="zone" aria-label="Time zone"><option value="America/New_York">Eastern time</option><option value="UTC">UTC</option></select></div>
+      <span id="updated" class="muted"></span>
+    </section>
+    <p id="forecastSummary" class="forecast-summary" aria-live="polite"></p>
+    <section class="cards" aria-label="Forecast at a glance">
+      <article><span class="label">Highest expected demand</span><strong id="peak">—</strong><small id="peakTime">Over the forecast's 24 hours</small></article>
+      <article><span class="label">Overall error</span><strong id="wape">—</strong><small>Total error relative to measured demand. Lower is better.</small></article>
+      <article><span class="label">Average hourly error</span><strong id="mae">—</strong><small>Average size of the miss, in megawatts.</small></article>
+      <article><span class="label">Hours checked</span><strong id="coverage">—</strong><small id="scoreStatus">Waiting for measured demand</small></article>
+    </section>
+    <section class="panel chart-panel">
+      <div class="panel-head"><div><p class="eyebrow">One day, hour by hour</p><h2>Expected and measured demand</h2></div><div class="legend"><span class="forecast-dot"></span>Forecast <span class="actual-dot"></span>Measured</div></div>
+      <p id="issueMeta" class="muted"></p>
+      <div id="chart" tabindex="0" aria-label="Forecast and measured demand chart"></div>
+      <p class="chart-note">Demand is measured in megawatts (MW). Blank stretches mean measurements haven't arrived yet; they don't count as forecast errors.</p>
+    </section>
+    <div class="lower">
+      <section class="panel">
+        <div class="panel-head"><div><p class="eyebrow">The numbers behind the chart</p><h2>Hourly breakdown</h2></div><button id="download">Download CSV</button></div>
+        <div class="table-wrap"><table>
+          <caption>All demand values are in megawatts. A positive difference means the forecast was higher than measured demand.</caption>
+          <thead><tr><th scope="col">Hour</th><th scope="col">Forecast</th><th scope="col">Measured</th><th scope="col">Difference</th></tr></thead><tbody id="hours"></tbody>
+        </table></div>
+      </section>
+      <aside class="panel">
+        <p class="eyebrow">Behind the forecast</p><h2>Are the daily jobs running?</h2><div id="pipelines"></div>
+        <div class="method"><h3>Why some numbers are still blank</h3><p>Each forecast is saved when it's made. As demand measurements arrive, we check those hours and update the errors above. A new forecast may have no results to check yet.</p><p>Choose an older forecast to see a fuller comparison. These results describe that one day's forecast.</p></div>
+        <details><summary>About these results</summary><p>Overall error (WAPE) adds up the absolute hourly misses and divides by total measured demand. Average hourly error (MAE) is the mean absolute miss. Both use only hours with measurements.</p><p>Weather is based on Charlotte, one location within the service area. The model is an experiment, and performance can vary by season.</p></details>
+        <details><summary>Technical details</summary><div id="provenance"></div></details>
+      </aside>
+    </div>
+    <footer><strong>GridCast</strong><span>A daily forecast, checked against measured demand.</span><span>Read-only snapshot · no automatic AWS polling</span></footer>
+  </main>
+  <script src="app.js"></script>
+</body>
+</html>
